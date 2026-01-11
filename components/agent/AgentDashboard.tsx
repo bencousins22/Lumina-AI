@@ -59,7 +59,7 @@ export const AgentDashboard: React.FC<AgentDashboardProps> = ({ isOpen, onClose 
 
             <div className="p-4 border-t border-border/50">
                 <div className="text-xs text-muted-foreground text-center">
-                    Aussie Agents v{process.env.npm_package_version || '1.0.0'}
+                    Lumina A.I v{process.env.npm_package_version || '1.0.0'}
                 </div>
             </div>
         </div>

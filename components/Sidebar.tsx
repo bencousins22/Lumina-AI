@@ -36,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-[72px] flex flex-col items-center py-4 bg-sidebar border-r border-sidebar-border shrink-0 z-40 transition-all duration-300">
       <div className="mb-6">
         <div className="h-10 w-10 flex items-center justify-center bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-xl border border-white/10 shadow-sm">
-             <Logo className="w-6 h-6" />
+             <Logo variant="icon" className="w-6 h-6" />
         </div>
       </div>
 

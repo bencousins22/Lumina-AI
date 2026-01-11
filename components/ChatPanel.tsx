@@ -109,7 +109,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
              <div className="h-14 md:h-16 border-b border-border/40 flex items-center justify-between px-4 md:px-6 shrink-0 bg-background/80 backdrop-blur-md z-10 sticky top-0">
                 <div className="flex items-center gap-3">
                     <div className="h-9 w-9 p-0.5 rounded-lg flex items-center justify-center bg-primary/5">
-                        <Logo />
+                        <Logo variant="icon" />
                     </div>
                     <div>
                         <h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
@@ -179,7 +179,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                              <div className="mb-8 relative">
                                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
                                 <div className="w-20 h-20 relative z-10 drop-shadow-2xl">
-                                    <Logo />
+                                    <Logo variant="icon" />
                                 </div>
                              </div>
                              

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
@@ -49,10 +50,9 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
          }}></div>
 
          <div className="relative z-10 flex items-center gap-3">
-             <div className="h-10 w-10 p-1 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm shadow-xl">
-                 <Logo />
+             <div className="h-14 w-40 p-2 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm shadow-xl flex items-center justify-center">
+                 <Logo variant="full" />
              </div>
-             <span className="font-semibold text-xl tracking-tight text-white">Lumina AI</span>
          </div>
 
          <div className="relative z-10 space-y-8 max-w-lg mb-12">
@@ -100,6 +100,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       {/* Right Panel - Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 bg-background relative">
          <div className="w-full max-w-[400px] space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+             
+             {/* Mobile Logo Display */}
+             <div className="flex justify-center md:hidden mb-8">
+                 <div className="h-16 w-52 p-3 bg-card rounded-2xl border border-border/50 shadow-xl flex items-center justify-center">
+                    <Logo variant="full" />
+                 </div>
+             </div>
+
              <div className="space-y-2 text-center md:text-left">
                  <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
                  <p className="text-muted-foreground">Enter your credentials to access your workspace.</p>

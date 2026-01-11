@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#09090b" />
     
-    <title>Aussie Agents - Personal AI Agent</title>
+    <title>Lumina A.I - Personal AI Agent</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
     <!-- React Day Picker Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-day-picker/dist/style.css" />
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (CDN for fallback/quick dev, standard build uses PostCSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Tailwind Configuration -->
@@ -192,38 +192,34 @@
   <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react/": "https://esm.sh/react@18.3.1/",
-    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-    "react-dom": "https://esm.sh/react-dom@18.3.1?external=react",
-    "react-dom/": "https://esm.sh/react-dom@18.3.1/?external=react",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react",
-    "@google/genai": "https://esm.sh/@google/genai@0.1.2",
-    "lucide-react": "https://esm.sh/lucide-react@0.454.0?external=react",
-    "react-markdown": "https://esm.sh/react-markdown@9.0.1?external=react",
-    "uuid": "https://esm.sh/uuid@9.0.1",
-    "@xyflow/react": "https://esm.sh/@xyflow/react@12.3.6?external=react,react-dom",
-    "class-variance-authority": "https://esm.sh/class-variance-authority@0.7.0",
-    "clsx": "https://esm.sh/clsx@2.1.0",
-    "tailwind-merge": "https://esm.sh/tailwind-merge@2.2.1",
-    "react-day-picker": "https://esm.sh/react-day-picker@8.10.0?external=react,react-dom,date-fns",
-    "date-fns": "https://esm.sh/date-fns@3.3.1",
-    "date-fns/": "https://esm.sh/date-fns@3.3.1/",
-    "@radix-ui/react-slot": "https://esm.sh/@radix-ui/react-slot@1.0.2?external=react,react-dom",
-    "cmdk": "https://esm.sh/cmdk@1.0.0?external=react,react-dom",
-    "vaul": "https://esm.sh/vaul@0.9.0?external=react,react-dom",
-    "@radix-ui/react-dialog": "https://esm.sh/@radix-ui/react-dialog@^1.1.15?external=react,react-dom",
-    "@radix-ui/react-select": "https://esm.sh/@radix-ui/react-select@^2.2.6?external=react,react-dom",
-    "@radix-ui/react-separator": "https://esm.sh/@radix-ui/react-separator@^1.1.8?external=react,react-dom",
-    "@radix-ui/react-switch": "https://esm.sh/@radix-ui/react-switch@^1.1.0?external=react,react-dom",
-    "@radix-ui/react-tabs": "https://esm.sh/@radix-ui/react-tabs@^1.1.0?external=react,react-dom",
-    "@radix-ui/react-toggle": "https://esm.sh/@radix-ui/react-toggle@^1.1.0?external=react,react-dom",
-    "@radix-ui/react-dropdown-menu": "https://esm.sh/@radix-ui/react-dropdown-menu@^2.1.16"
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@radix-ui/react-slot": "https://esm.sh/@radix-ui/react-slot@^1.2.4",
+    "@radix-ui/react-dialog": "https://esm.sh/@radix-ui/react-dialog@^1.1.15",
+    "@radix-ui/react-select": "https://esm.sh/@radix-ui/react-select@^2.2.6",
+    "@radix-ui/react-separator": "https://esm.sh/@radix-ui/react-separator@^1.1.8",
+    "@radix-ui/react-dropdown-menu": "https://esm.sh/@radix-ui/react-dropdown-menu@^2.1.16",
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@^3.4.0",
+    "@radix-ui/react-switch": "https://esm.sh/@radix-ui/react-switch@^1.2.6",
+    "uuid": "https://esm.sh/uuid@^13.0.0",
+    "@xyflow/react": "https://esm.sh/@xyflow/react@^12.10.0",
+    "react-day-picker": "https://esm.sh/react-day-picker@^9.13.0",
+    "class-variance-authority": "https://esm.sh/class-variance-authority@^0.7.1",
+    "@radix-ui/react-toggle": "https://esm.sh/@radix-ui/react-toggle@^1.1.10",
+    "vaul": "https://esm.sh/vaul@^1.1.2",
+    "cmdk": "https://esm.sh/cmdk@^1.1.1",
+    "@radix-ui/react-tabs": "https://esm.sh/@radix-ui/react-tabs@^1.1.13",
+    "clsx": "https://esm.sh/clsx@^2.1.1"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
