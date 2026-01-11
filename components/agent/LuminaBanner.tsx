@@ -21,7 +21,8 @@ export const LuminaBanner: React.FC = () => {
                 const data = await agentService.getBanners();
                 setBanners(data || []);
             } catch (e) {
-                console.error("Failed to fetch banners", e);
+                // Silently fail - banners endpoint may not exist on all backends
+                setBanners([]);
             }
         };
         fetchBanners();

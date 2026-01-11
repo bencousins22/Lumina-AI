@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { Loader2, Github, Chrome } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface LoginProps {
@@ -51,151 +51,91 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-background text-foreground relative overflow-hidden font-sans">
-      
-      {/* Left Panel - Hero/Brand */}
-      <div className="hidden md:flex flex-col justify-between w-1/2 p-12 relative bg-zinc-950 border-r border-white/10 overflow-hidden">
-         {/* Background Effects */}
-         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-zinc-950 to-zinc-950" />
-         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
-         
-         {/* Decorative Grid */}
-         <div className="absolute inset-0 opacity-[0.05]" style={{ 
-             backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
-             backgroundSize: '40px 40px' 
-         }}></div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-foreground relative overflow-hidden">
 
-         <div className="relative z-10 flex items-center gap-3">
-             <div className="h-14 w-40 p-2 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm shadow-xl flex items-center justify-center">
-                 <Logo variant="full" />
-             </div>
-         </div>
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40" />
 
-         <div className="relative z-10 space-y-8 max-w-lg mb-12">
-             <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                    </span>
-                    Now with Agentic Workflows
-                </div>
-                <h1 className="text-5xl font-bold tracking-tight text-white leading-[1.1]">
-                    Intelligence <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Redefined.</span>
-                </h1>
-             </div>
-             <p className="text-lg text-zinc-400 leading-relaxed max-w-md">
-                 Orchestrate complex tasks, analyze data streams, and deploy autonomous agents in a secure, enterprise-grade environment.
-             </p>
-             
-             <div className="flex gap-4 pt-4">
-                 <div className="flex -space-x-3">
-                     {[1,2,3].map(i => (
-                         <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800 flex items-center justify-center text-[10px] text-zinc-400">
-                             <div className="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-800 rounded-full" />
-                         </div>
-                     ))}
-                 </div>
-                 <div className="flex flex-col justify-center">
-                     <span className="text-xs font-medium text-white">Trusted by 500+ teams</span>
-                     <span className="text-[10px] text-zinc-500">From startups to Fortune 500</span>
-                 </div>
-             </div>
-         </div>
+      {/* Login Card */}
+      <div className="relative z-10 w-full max-w-md mx-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
 
-         <div className="relative z-10 flex items-center justify-between text-xs text-zinc-600 border-t border-white/5 pt-6">
-             <div className="flex gap-4">
-                 <a href="#" className="hover:text-zinc-400 transition-colors">Documentation</a>
-                 <a href="#" className="hover:text-zinc-400 transition-colors">API Reference</a>
-             </div>
-             <span>© 2024 Lumina Technologies Inc.</span>
-         </div>
-      </div>
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <div className="h-16 w-52 p-3 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm shadow-xl flex items-center justify-center">
+              <Logo variant="full" />
+            </div>
+          </div>
 
-      {/* Right Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-background relative">
-         <div className="w-full max-w-[400px] space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-             
-             {/* Mobile Logo Display */}
-             <div className="flex justify-center md:hidden mb-8">
-                 <div className="h-16 w-52 p-3 bg-card rounded-2xl border border-border/50 shadow-xl flex items-center justify-center">
-                    <Logo variant="full" />
-                 </div>
-             </div>
+          {/* Header */}
+          <div className="space-y-2 text-center">
+            <h2 className="text-3xl font-bold tracking-tight">Welcome to Lumina</h2>
+            <p className="text-zinc-400 text-sm">Sign in to access your AI workspace</p>
+          </div>
 
-             <div className="space-y-2 text-center md:text-left">
-                 <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
-                 <p className="text-muted-foreground">Enter your credentials to access your workspace.</p>
-             </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5 mt-8">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-zinc-300">Username</Label>
+              <Input
+                id="email"
+                type="text"
+                placeholder="Enter your username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="username"
+                className="h-11 bg-white/10 border-white/20 text-white placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20"
+                style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
+              />
+            </div>
 
-             <div className="space-y-4">
-                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal text-foreground" disabled={isLoading}>
-                     <Github className="mr-3 h-4 w-4" />
-                     Continue with GitHub
-                 </Button>
-                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal text-foreground" disabled={isLoading}>
-                     <Chrome className="mr-3 h-4 w-4 text-blue-500" />
-                     Continue with Google
-                 </Button>
-             </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-zinc-300">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="h-11 bg-white/10 border-white/20 text-white placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20"
+                style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
+              />
+            </div>
 
-             <div className="relative">
-                 <div className="absolute inset-0 flex items-center">
-                     <span className="w-full border-t border-border" />
-                 </div>
-                 <div className="relative flex justify-center text-xs uppercase">
-                     <span className="bg-background px-3 text-muted-foreground font-medium">Or continue with email</span>
-                 </div>
-             </div>
+            {error && (
+              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                {error}
+              </div>
+            )}
 
-             <form onSubmit={handleSubmit} className="space-y-5">
-                 <div className="space-y-2">
-                     <Label htmlFor="email">Username</Label>
-                     <Input
-                        id="email"
-                        type="text"
-                        placeholder="username"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="h-11 bg-white border-input !text-black placeholder:text-gray-500"
-                        style={{ color: '#000000', WebkitTextFillColor: '#000000' }}
-                     />
-                 </div>
-                 <div className="space-y-2">
-                     <div className="flex items-center justify-between">
-                         <Label htmlFor="password">Password</Label>
-                         <a href="#" className="text-xs text-primary hover:underline hover:text-primary/80 font-medium">Forgot password?</a>
-                     </div>
-                     <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="h-11 bg-white border-input !text-black placeholder:text-gray-500"
-                        style={{ color: '#000000', WebkitTextFillColor: '#000000' }}
-                     />
-                 </div>
+            <Button
+              type="submit"
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 font-medium"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </form>
 
-                 {error && (
-                     <div className="text-xs text-destructive bg-destructive/10 border border-destructive/20 p-3 rounded-md flex items-center gap-2">
-                         <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
-                         {error}
-                     </div>
-                 )}
-
-                 <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/20" disabled={isLoading}>
-                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                     {isLoading ? 'Authenticating...' : 'Sign In'}
-                 </Button>
-             </form>
-
-             <p className="text-xs text-center text-muted-foreground px-8 leading-relaxed">
-                 By clicking continue, you agree to our <a href="#" className="underline hover:text-foreground">Terms of Service</a> and <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
-             </p>
-         </div>
+          {/* Footer */}
+          <div className="pt-4 text-center">
+            <p className="text-xs text-zinc-500">
+              © 2024 Lumina AI • Enterprise Agent Platform
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

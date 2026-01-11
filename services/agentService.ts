@@ -622,7 +622,7 @@ class AgentService {
 
     // --- Notifications & Banners ---
     async getBanners(): Promise<any[]> {
-        return this.request('banners', { method: 'GET' });
+        return this.request('banners', { method: 'GET', silent: true });
     }
 
     async getNotifications(): Promise<any[]> {
