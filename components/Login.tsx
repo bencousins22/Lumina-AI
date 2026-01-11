@@ -151,15 +151,16 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
              <form onSubmit={handleSubmit} className="space-y-5">
                  <div className="space-y-2">
-                     <Label htmlFor="email">Email address</Label>
-                     <Input 
-                        id="email" 
-                        type="email" 
-                        placeholder="name@company.com" 
+                     <Label htmlFor="email">Username</Label>
+                     <Input
+                        id="email"
+                        type="text"
+                        placeholder="username"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-11 bg-white border-input text-black placeholder:text-gray-500"
+                        className="h-11 bg-white border-input !text-black placeholder:text-gray-500"
+                        style={{ color: '#000000' }}
                      />
                  </div>
                  <div className="space-y-2">
@@ -167,13 +168,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                          <Label htmlFor="password">Password</Label>
                          <a href="#" className="text-xs text-primary hover:underline hover:text-primary/80 font-medium">Forgot password?</a>
                      </div>
-                     <Input 
-                        id="password" 
-                        type="password" 
+                     <Input
+                        id="password"
+                        type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="h-11 bg-white border-input text-black placeholder:text-gray-500"
+                        className="h-11 bg-white border-input !text-black placeholder:text-gray-500"
+                        style={{ color: '#000000' }}
                      />
                  </div>
 
