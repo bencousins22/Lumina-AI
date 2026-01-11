@@ -307,6 +307,7 @@ const App: React.FC = () => {
                         onTerminateChat={handleTerminateChat}
                         onExportChat={handleExportChat}
                         bottomPadding={true}
+                        variant="full"
                     />
                 )}
                 {currentView === 'projects' && <div className="p-4 h-full overflow-y-auto"><AgentProjects currentContextId={currentSessionId || undefined} /></div>}
@@ -330,7 +331,7 @@ const App: React.FC = () => {
             <div 
                 className={cn(
                     "flex-shrink-0 bg-background border-r border-border transition-all duration-300 relative flex flex-col z-10",
-                    isChatView ? "w-full" : (isChatPanelOpen && currentView !== 'home' ? "w-[400px]" : "w-0 overflow-hidden")
+                    isChatView ? "w-full" : (isChatPanelOpen ? "w-[400px]" : "w-0 overflow-hidden")
                 )}
             >
                 {/* Don't render ChatPanel content if width is 0 to save resources */}
@@ -345,14 +346,15 @@ const App: React.FC = () => {
                         onResetChat={handleResetChat}
                         onTerminateChat={handleTerminateChat}
                         onExportChat={handleExportChat}
+                        variant={isChatView ? 'full' : 'sidebar'}
                     />
                 )}
                 
-                {/* Toggle Button - Visible when NOT in chat view and NOT in home view */}
-                {!isChatView && currentView !== 'home' && (
+                {/* Toggle Button - Visible when NOT in chat view */}
+                {!isChatView && (
                     <button 
                         onClick={() => setIsChatPanelOpen(!isChatPanelOpen)}
-                        className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 h-6 w-6 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground shadow-sm"
+                        className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 h-6 w-6 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground shadow-sm hover:scale-110 transition-transform"
                     >
                         {isChatPanelOpen ? <PanelLeftClose size={12} /> : <PanelLeftOpen size={12} />}
                     </button>

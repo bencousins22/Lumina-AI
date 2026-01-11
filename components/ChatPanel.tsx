@@ -28,6 +28,7 @@ interface ChatPanelProps {
     onTerminateChat?: () => void;
     onExportChat?: () => void;
     bottomPadding?: boolean;
+    variant?: 'full' | 'sidebar';
 }
 
 const STARTER_PROMPTS = [
@@ -67,11 +68,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     onResetChat,
     onTerminateChat,
     onExportChat,
-    bottomPadding = false
+    bottomPadding = false,
+    variant = 'full'
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [files, setFiles] = useState<File[]>([]);
     const [showMenu, setShowMenu] = useState(false);
+    
+    const isSidebar = variant === 'sidebar';
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -104,52 +108,72 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-background relative font-sans">
+        <div className="flex flex-col h-full bg-background relative font-sans w-full">
              {/* Unified Header */}
-             <div className="h-14 md:h-16 border-b border-border/40 flex items-center justify-between px-4 md:px-6 shrink-0 bg-background/80 backdrop-blur-md z-10 sticky top-0">
-                <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 p-0.5 rounded-lg flex items-center justify-center bg-primary/5">
+             <div className={cn(
+                 "border-b border-border/40 flex items-center justify-between shrink-0 bg-background/80 backdrop-blur-md z-10 sticky top-0 transition-all",
+                 isSidebar ? "h-14 px-4" : "h-14 md:h-16 px-4 md:px-6"
+             )}>
+                <div className="flex items-center gap-3 overflow-hidden">
+                    <div className={cn(
+                        "rounded-lg flex items-center justify-center bg-primary/5 shrink-0 transition-all",
+                        isSidebar ? "h-8 w-8 p-1" : "h-9 w-9 p-0.5"
+                    )}>
                         <Logo variant="icon" />
                     </div>
-                    <div>
-                        <h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
-                            Lumina Workspace
-                            <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium hidden sm:inline-block">Beta</span>
+                    <div className="min-w-0 flex flex-col justify-center">
+                        <h2 className={cn(
+                            "font-semibold text-foreground tracking-tight flex items-center gap-2 truncate",
+                            isSidebar ? "text-sm" : "text-sm"
+                        )}>
+                            {isSidebar ? "Copilot" : "Lumina Workspace"}
+                            {!isSidebar && <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium hidden sm:inline-block">Beta</span>}
                         </h2>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            <span>System Operational</span>
-                        </div>
+                        {!isSidebar ? (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+                                <span className="relative flex h-2 w-2 shrink-0">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span>System Operational</span>
+                            </div>
+                        ) : (
+                            <div className="text-[10px] text-muted-foreground truncate font-medium opacity-80 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                {aiConfig.model.split('/').pop()}
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="hidden md:flex items-center gap-2 mr-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50 hover:bg-muted transition-colors cursor-pointer" title="Current Model">
-                        <Box size={12} className="text-primary" />
-                        {aiConfig.model.split('/').pop()}
-                    </div>
-                    <div className="hidden md:flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={onExportChat} className="text-muted-foreground hover:text-foreground" title="Export Chat">
-                            <Download size={18} />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={onResetChat} className="text-muted-foreground hover:text-foreground" title="Reset Context">
-                            <RotateCcw size={18} />
-                        </Button>
-                    </div>
+                
+                <div className="flex items-center gap-1 ml-2 shrink-0">
+                    {!isSidebar && (
+                        <div className="hidden md:flex items-center gap-2 mr-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50 hover:bg-muted transition-colors cursor-pointer" title="Current Model">
+                            <Box size={12} className="text-primary" />
+                            {aiConfig.model.split('/').pop()}
+                        </div>
+                    )}
                     
-                    {/* Mobile Menu Trigger */}
-                    <button 
-                        onClick={() => setShowMenu(!showMenu)}
-                        className="md:hidden p-2 rounded-lg hover:bg-muted text-muted-foreground"
-                    >
-                        <MoreVertical size={20} />
-                    </button>
+                    <div className="flex gap-0.5">
+                        <Button variant="ghost" size="icon" onClick={onExportChat} className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Export Chat">
+                            <Download size={isSidebar ? 14 : 16} />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={onResetChat} className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Reset Context">
+                            <RotateCcw size={isSidebar ? 14 : 16} />
+                        </Button>
+                        
+                        {/* Mobile/Extra Menu Trigger */}
+                        <button 
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="md:hidden p-2 rounded-lg hover:bg-muted text-muted-foreground"
+                        >
+                            <MoreVertical size={20} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile/Compact Menu Overlay */}
             {showMenu && (
                 <>
                     <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setShowMenu(false)} />
@@ -173,52 +197,70 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
             {/* Messages Area */}
             <Conversation>
-                <ConversationContent className={cn("max-w-4xl mx-auto w-full px-4 md:px-6 pt-4", bottomPadding && "pb-4")}>
+                <ConversationContent className={cn(
+                    "w-full pt-4 scroll-smooth",
+                    isSidebar ? "px-3" : "max-w-4xl mx-auto px-4 md:px-6",
+                    bottomPadding && "pb-4"
+                )}>
                     {messages.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center p-4 min-h-[60vh] animate-in fade-in zoom-in-95 duration-700">
-                             <div className="mb-8 relative">
+                        <div className={cn(
+                            "h-full flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-700",
+                            isSidebar ? "p-2 min-h-[40vh]" : "p-4 min-h-[60vh]"
+                        )}>
+                             <div className={cn("mb-6 relative", isSidebar && "mb-4")}>
                                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
-                                <div className="w-20 h-20 relative z-10 drop-shadow-2xl">
+                                <div className={cn("relative z-10 drop-shadow-2xl", isSidebar ? "w-12 h-12" : "w-20 h-20")}>
                                     <Logo variant="icon" />
                                 </div>
                              </div>
                              
-                             <h3 className="text-2xl font-bold text-foreground mb-3 tracking-tight">How can I help you today?</h3>
-                             <p className="text-muted-foreground max-w-md text-center mb-10 text-sm leading-relaxed">
-                                I'm your advanced AI assistant. I can help you write code, analyze data, browse the web, and manage your projects.
-                             </p>
+                             <h3 className={cn("font-bold text-foreground tracking-tight text-center", isSidebar ? "text-lg mb-2" : "text-2xl mb-3")}>
+                                {isSidebar ? "Lumina Copilot" : "How can I help you today?"}
+                             </h3>
+                             
+                             {!isSidebar && (
+                                <p className="text-muted-foreground max-w-md text-center mb-10 text-sm leading-relaxed">
+                                    I'm your advanced AI assistant. I can help you write code, analyze data, browse the web, and manage your projects.
+                                </p>
+                             )}
 
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
-                                {STARTER_PROMPTS.map((starter, i) => (
-                                    <button 
-                                        key={i}
-                                        onClick={() => handleStarterClick(starter.prompt)}
-                                        className="flex items-start gap-4 p-4 rounded-xl border border-border/50 bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-md transition-all text-left group"
-                                    >
-                                        <div className="p-2.5 bg-primary/5 text-primary rounded-lg group-hover:bg-primary/10 transition-colors">
-                                            <starter.icon size={18} />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-sm text-foreground mb-1 flex items-center justify-between">
-                                                {starter.label}
-                                                <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
+                             {isSidebar ? (
+                                 <p className="text-xs text-muted-foreground text-center max-w-[250px]">
+                                     Ask me anything about your current task or project.
+                                 </p>
+                             ) : (
+                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
+                                    {STARTER_PROMPTS.map((starter, i) => (
+                                        <button 
+                                            key={i}
+                                            onClick={() => handleStarterClick(starter.prompt)}
+                                            className="flex items-start gap-4 p-4 rounded-xl border border-border/50 bg-card/50 hover:bg-card hover:border-primary/30 hover:shadow-md transition-all text-left group"
+                                        >
+                                            <div className="p-2.5 bg-primary/5 text-primary rounded-lg group-hover:bg-primary/10 transition-colors">
+                                                <starter.icon size={18} />
                                             </div>
-                                            <div className="text-xs text-muted-foreground line-clamp-1">{starter.description}</div>
-                                        </div>
-                                    </button>
-                                ))}
-                             </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-medium text-sm text-foreground mb-1 flex items-center justify-between">
+                                                    {starter.label}
+                                                    <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
+                                                </div>
+                                                <div className="text-xs text-muted-foreground line-clamp-1">{starter.description}</div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                 </div>
+                             )}
                         </div>
                     ) : (
                         messages.map((msg) => (
-                            <Message key={msg.id} from={msg.role}>
-                                <MessageContent isUser={msg.role === 'user'}>
+                            <Message key={msg.id} from={msg.role} className={cn(isSidebar && "gap-3")}>
+                                <MessageContent 
+                                    isUser={msg.role === 'user'} 
+                                    className={cn(isSidebar && "py-3 px-3.5 text-sm")}
+                                >
                                     <div className="flex items-center gap-2 mb-2 select-none">
                                         <span className={cn("text-xs font-semibold tracking-wide", msg.role === 'user' ? "text-primary-foreground/90" : "text-foreground/90")}>
                                             {msg.role === 'user' ? 'You' : 'Lumina'}
-                                        </span>
-                                        <span className="text-[10px] opacity-50">
-                                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     </div>
                                     
@@ -231,12 +273,12 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                                         </div>
                                     )}
 
-                                    <MessageResponse>
+                                    <MessageResponse className={cn(isSidebar && "prose-sm")}>
                                         <MessageRenderer content={msg.content} />
                                     </MessageResponse>
 
                                     {!msg.isThinking && msg.role === 'model' && (
-                                        <Actions content={msg.content} />
+                                        <Actions content={msg.content} className={cn(isSidebar && "mt-1")} />
                                     )}
                                 </MessageContent>
                             </Message>
@@ -247,10 +289,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
                 {/* Input Area */}
                 <div className={cn(
-                    "px-4 md:px-6 bg-gradient-to-t from-background via-background to-transparent pt-10 z-20 transition-all",
-                    bottomPadding ? "pb-4" : "pb-6"
+                    "bg-gradient-to-t from-background via-background to-transparent transition-all z-20",
+                    isSidebar ? "px-3 pb-4 pt-2" : "px-4 md:px-6 pt-10 pb-6"
                 )}>
-                    <div className="max-w-4xl mx-auto w-full relative">
+                    <div className={cn(
+                        "w-full relative",
+                        !isSidebar && "max-w-4xl mx-auto"
+                    )}>
                         {/* Active File Uploads Preview */}
                         {files.length > 0 && (
                             <div className="absolute bottom-full left-0 mb-3 flex gap-2 overflow-x-auto px-1 py-1 w-full">
@@ -275,12 +320,17 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                             loading={isStreaming}
                             onFileSelect={handleFileSelect}
                             disabled={isStreaming}
-                            className="shadow-2xl shadow-primary/5 border-border/80 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 bg-background/80 backdrop-blur-xl"
-                            placeholder="Send a message..."
+                            className={cn(
+                                "shadow-2xl shadow-primary/5 border-border/80 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 bg-background/80 backdrop-blur-xl",
+                                isSidebar && "rounded-[20px] py-1.5"
+                            )}
+                            placeholder={isSidebar ? "Ask Copilot..." : "Send a message..."}
                         />
-                        <div className="text-[10px] text-center text-muted-foreground mt-2 opacity-50">
-                            AI can make mistakes. Please verify important information.
-                        </div>
+                        {!isSidebar && (
+                            <div className="text-[10px] text-center text-muted-foreground mt-2 opacity-50">
+                                AI can make mistakes. Please verify important information.
+                            </div>
+                        )}
                     </div>
                 </div>
             </Conversation>
