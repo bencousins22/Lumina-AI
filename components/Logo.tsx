@@ -33,8 +33,8 @@ export const Logo = ({ className, variant = 'full' }: LogoProps) => {
         </radialGradient>
 
         <linearGradient id={textGradientId} x1="0" y1="0" x2="0" y2="160">
-          <stop offset="0%" stopColor="#E0F2FE"/>
-          <stop offset="100%" stopColor="#38BDF8"/>
+          <stop offset="0%" style={{ stopColor: 'var(--logo-text-start)' }}/>
+          <stop offset="100%" style={{ stopColor: 'var(--logo-text-end)' }}/>
         </linearGradient>
       </defs>
 
