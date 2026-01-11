@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { CalendarClock, Play, Trash2, Plus, Zap, Loader2, Clock, CheckCircle2, PauseCircle } from 'lucide-react';
+import { CalendarClock, Play, Trash2, Plus, Zap, Loader2, Clock, CheckCircle2, PauseCircle, Search, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -22,6 +22,7 @@ export const AgentScheduler: React.FC = () => {
   const [tasks, setTasks] = useState<SchedulerTask[]>([]);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Create State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -84,23 +85,42 @@ export const AgentScheduler: React.FC = () => {
       }
   };
 
+  const filteredTasks = tasks.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
   return (
-    <div className="h-full flex flex-col space-y-6 animate-in fade-in duration-300">
-       <div className="flex justify-between items-center shrink-0">
-        <div>
+    <div className="h-full flex flex-col space-y-6 animate-in fade-in duration-300 p-1">
+       {/* Header */}
+       <div className="flex justify-between items-start shrink-0">
+        <div className="space-y-1">
             <h2 className="text-2xl font-bold tracking-tight">Scheduler</h2>
-            <p className="text-muted-foreground">Automate agent workflows with cron jobs.</p>
+            <p className="text-muted-foreground">Automate agent workflows with Cron jobs.</p>
         </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button onClick={() => setIsDialogOpen(true)} className="shadow-lg shadow-primary/20">
             <Plus size={16} className="mr-2" /> New Task
         </Button>
       </div>
 
-      <div className="flex-1 overflow-hidden bg-card rounded-xl border shadow-sm flex flex-col">
-        <div className="flex-1 overflow-auto">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between gap-4 shrink-0">
+          <div className="relative w-full max-w-sm">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input 
+                    placeholder="Search tasks..." 
+                    className="pl-9 h-9 bg-muted/40 border-border/50" 
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                />
+          </div>
+          <Button variant="ghost" size="icon" onClick={loadTasks} disabled={loading} className="h-9 w-9">
+                <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          </Button>
+      </div>
+
+      <div className="flex-1 overflow-hidden bg-card/50 rounded-xl border border-border/50 shadow-sm flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto workspace-scroll">
             <Table>
-                <TableHeader>
-                    <TableRow>
+                <TableHeader className="bg-muted/30 sticky top-0 z-10">
+                    <TableRow className="hover:bg-transparent">
                         <TableHead className="w-[300px]">Task Name</TableHead>
                         <TableHead>Schedule</TableHead>
                         <TableHead>Next Run</TableHead>
@@ -111,37 +131,40 @@ export const AgentScheduler: React.FC = () => {
                 <TableBody>
                     {loading && tasks.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                                <Loader2 className="animate-spin mx-auto text-muted-foreground" />
+                            <TableCell colSpan={5} className="h-32 text-center">
+                                <Loader2 className="animate-spin mx-auto text-muted-foreground mb-2" />
+                                <span className="text-xs text-muted-foreground">Loading tasks...</span>
                             </TableCell>
                         </TableRow>
-                    ) : tasks.length === 0 ? (
+                    ) : filteredTasks.length === 0 ? (
                         <TableRow>
                             <TableCell colSpan={5} className="h-64 text-center">
                                 <Empty className="border-0">
                                     <EmptyHeader>
-                                        <EmptyMedia variant="icon"><CalendarClock /></EmptyMedia>
-                                        <EmptyTitle>No Scheduled Tasks</EmptyTitle>
+                                        <EmptyMedia variant="icon" className="mb-4"><CalendarClock /></EmptyMedia>
+                                        <EmptyTitle>No Tasks Found</EmptyTitle>
                                         <EmptyDescription>
-                                            Create automated tasks to run background agents at specific intervals.
+                                            {searchQuery ? "No tasks match your search." : "Create automated tasks to run background agents at specific intervals."}
                                         </EmptyDescription>
-                                        <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)} className="mt-4">
-                                            Create First Task
-                                        </Button>
+                                        {!searchQuery && (
+                                            <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)} className="mt-4">
+                                                Create First Task
+                                            </Button>
+                                        )}
                                     </EmptyHeader>
                                 </Empty>
                             </TableCell>
                         </TableRow>
                     ) : (
-                        tasks.map(task => (
-                            <TableRow key={task.id}>
+                        filteredTasks.map(task => (
+                            <TableRow key={task.id} className="group hover:bg-muted/30">
                                 <TableCell className="font-medium">
                                     <div className="flex items-center gap-3">
-                                        <div className={cn("p-2 rounded-lg", task.active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground")}>
+                                        <div className={cn("p-2 rounded-lg border border-border/50 bg-background", task.active ? "text-primary border-primary/20" : "text-muted-foreground")}>
                                             <CalendarClock size={18} />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span>{task.name}</span>
+                                            <span className="text-sm font-semibold">{task.name}</span>
                                             {task.state === 'RUNNING' && (
                                                 <span className="text-[10px] text-amber-500 font-medium animate-pulse flex items-center gap-1">
                                                     <Loader2 size={8} className="animate-spin" /> Running Now
@@ -151,7 +174,7 @@ export const AgentScheduler: React.FC = () => {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <code className="text-xs bg-muted px-2 py-1 rounded border font-mono text-foreground">{task.cron}</code>
+                                    <code className="text-xs bg-muted/50 px-2 py-1 rounded border border-border/50 font-mono text-foreground">{task.cron}</code>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground text-xs font-mono">
                                     {task.next_run || '-'}
@@ -162,27 +185,28 @@ export const AgentScheduler: React.FC = () => {
                                             checked={task.active} 
                                             onCheckedChange={() => toggleTask(task)} 
                                             disabled={!!actionLoading}
+                                            className="scale-90"
                                         />
-                                        <Badge variant={task.active ? "success" : "secondary"}>
+                                        <span className={cn("text-xs font-medium", task.active ? "text-foreground" : "text-muted-foreground")}>
                                             {task.active ? "Active" : "Paused"}
-                                        </Badge>
+                                        </span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <div className="flex justify-end gap-1">
+                                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Button 
                                             size="sm" 
-                                            variant="outline" 
+                                            variant="ghost" 
                                             onClick={() => runTask(task.id)}
                                             disabled={!!actionLoading}
-                                            className="h-8"
+                                            className="h-8 px-2 hover:bg-primary/10 hover:text-primary"
                                             title="Run Now"
                                         >
-                                            <Zap size={14} className={cn("mr-1", actionLoading === task.id ? "animate-spin" : "fill-current")} />
+                                            <Zap size={14} className={cn("mr-1.5", actionLoading === task.id ? "animate-spin" : "fill-current")} />
                                             Run
                                         </Button>
                                         <Button 
-                                            size="sm" 
+                                            size="icon" 
                                             variant="ghost" 
                                             className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                             onClick={() => deleteTask(task.id)}

@@ -86,19 +86,19 @@ export const AgentFiles: React.FC = () => {
   const filteredFiles = files.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
+    <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300 p-1">
       
       {/* Header with Actions */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6 shrink-0">
           <div className="flex justify-between items-start">
-             <div>
+             <div className="space-y-1">
                 <h2 className="text-2xl font-bold tracking-tight">Files</h2>
                 <p className="text-muted-foreground">Browse and manage agent workspace files.</p>
              </div>
              <div className="flex gap-2">
                  <div className="relative group">
                      <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleUpload} />
-                     <Button>
+                     <Button className="shadow-lg shadow-primary/20">
                          <Upload size={16} className="mr-2" /> Upload
                      </Button>
                  </div>
@@ -107,10 +107,10 @@ export const AgentFiles: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
              {/* Breadcrumbs */}
-             <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-lg border border-border/50 text-sm overflow-x-auto max-w-full flex-1">
+             <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/50 text-sm overflow-x-auto max-w-full flex-1 h-9">
                 <button 
                     onClick={() => setCurrentPath('')} 
-                    className={cn("p-1.5 rounded hover:bg-background transition-colors", !currentPath && "text-primary bg-background shadow-sm")}
+                    className={cn("p-1.5 rounded hover:bg-background transition-colors mx-1", !currentPath && "text-primary bg-background shadow-sm")}
                 >
                     <Home size={14} />
                 </button>
@@ -128,16 +128,16 @@ export const AgentFiles: React.FC = () => {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input 
                         placeholder="Search..." 
-                        className="pl-9 h-9" 
+                        className="pl-9 h-9 bg-muted/40 border-border/50" 
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/50">
-                    <Toggle pressed={viewMode === 'grid'} onPressedChange={() => setViewMode('grid')} size="sm">
+                <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/50 h-9">
+                    <Toggle pressed={viewMode === 'grid'} onPressedChange={() => setViewMode('grid')} size="sm" className="h-7 px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
                         <LayoutGrid size={14} />
                     </Toggle>
-                    <Toggle pressed={viewMode === 'list'} onPressedChange={() => setViewMode('list')} size="sm">
+                    <Toggle pressed={viewMode === 'list'} onPressedChange={() => setViewMode('list')} size="sm" className="h-7 px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
                         <ListIcon size={14} />
                     </Toggle>
                 </div>
@@ -149,7 +149,7 @@ export const AgentFiles: React.FC = () => {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto min-h-0 bg-card/50 rounded-xl border border-border/50 shadow-sm relative">
+      <div className="flex-1 overflow-y-auto min-h-0 bg-card/50 rounded-xl border border-border/50 shadow-sm relative workspace-scroll">
         {loading && (
              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
                  <Loader2 className="animate-spin text-primary" />
@@ -170,8 +170,8 @@ export const AgentFiles: React.FC = () => {
 
         {viewMode === 'list' ? (
              <Table>
-                <TableHeader>
-                    <TableRow>
+                <TableHeader className="bg-muted/30 sticky top-0 z-10">
+                    <TableRow className="hover:bg-transparent">
                         <TableHead className="w-[60%] pl-6">Name</TableHead>
                         <TableHead className="text-right">Size</TableHead>
                         <TableHead className="text-right pr-6">Actions</TableHead>
@@ -189,14 +189,14 @@ export const AgentFiles: React.FC = () => {
                         </TableRow>
                     )}
                     {filteredFiles.map((file, i) => (
-                        <TableRow key={i} className="group">
+                        <TableRow key={i} className="group hover:bg-muted/30">
                             <TableCell className="pl-6">
                                 <div 
                                     className="flex items-center gap-3 cursor-pointer select-none"
                                     onClick={() => file.type === 'directory' && handleNavigate(file.name)}
                                 >
                                     {getFileIcon(file.name, file.type, 18)}
-                                    <span className="font-medium text-sm">{file.name}</span>
+                                    <span className="font-medium text-sm text-foreground">{file.name}</span>
                                 </div>
                             </TableCell>
                             <TableCell className="text-right font-mono text-xs text-muted-foreground">
@@ -220,7 +220,7 @@ export const AgentFiles: React.FC = () => {
             <div className="p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {currentPath && (
                     <Card 
-                        className="aspect-square flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors border-dashed"
+                        className="aspect-square flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors border-dashed bg-transparent"
                         onClick={handleNavigateUp}
                     >
                         <CornerLeftUp size={24} className="text-muted-foreground" />
@@ -230,7 +230,7 @@ export const AgentFiles: React.FC = () => {
                 {filteredFiles.map((file, i) => (
                     <Card 
                         key={i}
-                        className="aspect-square flex flex-col items-center justify-center p-4 cursor-pointer hover:border-primary/50 transition-all group relative"
+                        className="aspect-square flex flex-col items-center justify-center p-4 cursor-pointer hover:border-primary/50 transition-all group relative bg-card hover:bg-accent/5"
                         onClick={() => file.type === 'directory' && handleNavigate(file.name)}
                     >
                         <div className="flex-1 flex items-center justify-center w-full">
