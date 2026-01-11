@@ -4,7 +4,7 @@ import {
     File, Folder, Download, Trash2, Upload, RefreshCw, Home, 
     ChevronRight, CornerLeftUp, Loader2, Search, LayoutGrid, 
     List as ListIcon, FileText, FileCode, Image as ImageIcon,
-    FileJson, FileArchive, MoreVertical
+    FileJson, FileArchive, MoreVertical, BookOpen
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -14,7 +14,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { agentService, AgentFile } from '../../services/agentService';
 import { cn } from '../../lib/utils';
 
-export const AgentFiles: React.FC = () => {
+interface AgentFilesProps {
+    currentContextId?: string;
+}
+
+export const AgentFiles: React.FC<AgentFilesProps> = ({ currentContextId }) => {
   const [files, setFiles] = useState<AgentFile[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
@@ -48,6 +52,23 @@ export const AgentFiles: React.FC = () => {
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleImportKnowledge = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0 && currentContextId) {
+      setLoading(true);
+      try {
+        await agentService.importKnowledge(currentContextId, Array.from(e.target.files));
+        alert("Knowledge imported successfully!");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to import knowledge.");
+      } finally {
+        setLoading(false);
+      }
+    } else if (!currentContextId) {
+        alert("Please select or create a chat session first to import knowledge into its context.");
     }
   };
 
@@ -96,6 +117,18 @@ export const AgentFiles: React.FC = () => {
                 <p className="text-muted-foreground">Browse and manage agent workspace files.</p>
              </div>
              <div className="flex gap-2">
+                 <div className="relative group">
+                     <input 
+                        type="file" 
+                        multiple
+                        className="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                        onChange={handleImportKnowledge} 
+                        title="Import files into agent knowledge context"
+                    />
+                     <Button variant="outline" className="border-primary/30 hover:bg-primary/5 text-primary">
+                         <BookOpen size={16} className="mr-2" /> Import Knowledge
+                     </Button>
+                 </div>
                  <div className="relative group">
                      <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleUpload} />
                      <Button className="shadow-lg shadow-primary/20">

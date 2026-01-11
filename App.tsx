@@ -8,11 +8,15 @@ import { AgentFiles } from './components/agent/AgentFiles';
 import { AgentBackups } from './components/agent/AgentBackups';
 import { AgentScheduler } from './components/agent/AgentScheduler';
 import { AgentProjects } from './components/agent/AgentProjects';
+import { MemoryDashboard } from './components/agent/MemoryDashboard';
+import { AgentMCPServers } from './components/agent/AgentMCPServers';
 import { HomeDashboard } from './components/HomeDashboard';
 import { ArtifactPanel } from './components/ArtifactPanel';
 import { MobileNavBar } from './components/MobileNavBar';
 import { Login } from './components/Login';
 import { CommandMenu } from './components/CommandMenu';
+import { LuminaBanner } from './components/agent/LuminaBanner';
+import { Toaster } from './components/ui/toaster';
 import { Message, ChatSession, AgentConfig, DEFAULT_AGENT_CONFIG, AIConfig } from './types';
 import { agentService } from './services/agentService';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,6 +35,7 @@ const App: React.FC = () => {
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
   const [activeArtifact, setActiveArtifact] = useState<{
@@ -238,6 +243,30 @@ const App: React.FC = () => {
     } catch (e) { console.error(e); alert("Failed to export chat"); }
   };
 
+  const handlePauseChat = async () => {
+    if (!currentSessionId) return;
+    try {
+        const result = await agentService.pause(currentSessionId, !isPaused);
+        setIsPaused(result.pause);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleNudgeChat = async () => {
+    if (!currentSessionId) return;
+    try {
+        await agentService.nudge(currentSessionId);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleRestartFramework = async () => {
+    if (!confirm("Restart the entire Agent Zero framework? Current session state will be preserved but active processes will stop.")) return;
+    try {
+        await agentService.restart();
+        alert("Framework restarting...");
+        setTimeout(() => window.location.reload(), 2000);
+    } catch (e) { console.error(e); }
+  };
+
   const aiConfig: AIConfig = {
       model: agentConfig.chat_model_name,
       temperature: 0,
@@ -265,12 +294,14 @@ const App: React.FC = () => {
   const isChatView = currentView === 'chat';
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground font-sans selection:bg-primary/20">
-      <CommandMenu 
-        onNavigate={handleViewChange}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onLogout={() => setIsAuthenticated(false)}
-      />
+    <div className="flex flex-col h-[100dvh] overflow-hidden bg-background text-foreground font-sans selection:bg-primary/20">
+      <LuminaBanner />
+      <div className="flex flex-1 overflow-hidden">
+        <CommandMenu 
+          onNavigate={handleViewChange}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onLogout={() => setIsAuthenticated(false)}
+        />
       
       <SettingsModal 
         isOpen={isSettingsOpen} 
@@ -302,18 +333,24 @@ const App: React.FC = () => {
                         setInput={setInput}
                         onSendMessage={handleSendMessage}
                         isStreaming={isStreaming}
+                        isPaused={isPaused}
                         aiConfig={aiConfig}
                         onResetChat={handleResetChat}
                         onTerminateChat={handleTerminateChat}
                         onExportChat={handleExportChat}
+                        onPauseChat={handlePauseChat}
+                        onNudgeChat={handleNudgeChat}
+                        onRestartFramework={handleRestartFramework}
                         bottomPadding={true}
                         variant="full"
                     />
                 )}
                 {currentView === 'projects' && <div className="p-4 h-full overflow-y-auto"><AgentProjects currentContextId={currentSessionId || undefined} /></div>}
+                {currentView === 'memory' && <div className="h-full overflow-hidden"><MemoryDashboard currentContextId={currentSessionId || undefined} /></div>}
+                {currentView === 'mcp' && <div className="h-full overflow-hidden"><AgentMCPServers /></div>}
                 {currentView === 'dashboard' && <div className="h-full w-full"><A2ANodeEditor /></div>}
                 {currentView === 'scheduler' && <div className="p-4 h-full overflow-y-auto"><AgentScheduler /></div>}
-                {currentView === 'files' && <div className="p-4 h-full overflow-y-auto"><AgentFiles /></div>}
+                {currentView === 'files' && <div className="p-4 h-full overflow-y-auto"><AgentFiles currentContextId={currentSessionId || undefined} /></div>}
                 {currentView === 'backups' && <div className="p-4 h-full overflow-y-auto"><AgentBackups /></div>}
             </main>
             
@@ -342,10 +379,14 @@ const App: React.FC = () => {
                         setInput={setInput}
                         onSendMessage={handleSendMessage}
                         isStreaming={isStreaming}
+                        isPaused={isPaused}
                         aiConfig={aiConfig}
                         onResetChat={handleResetChat}
                         onTerminateChat={handleTerminateChat}
                         onExportChat={handleExportChat}
+                        onPauseChat={handlePauseChat}
+                        onNudgeChat={handleNudgeChat}
+                        onRestartFramework={handleRestartFramework}
                         variant={isChatView ? 'full' : 'sidebar'}
                     />
                 )}
@@ -370,8 +411,14 @@ const App: React.FC = () => {
                         {currentView === 'projects' && (
                             <div className="p-6 h-full overflow-hidden"><AgentProjects currentContextId={currentSessionId || undefined} /></div>
                         )}
+                        {currentView === 'memory' && (
+                            <div className="h-full overflow-hidden"><MemoryDashboard currentContextId={currentSessionId || undefined} /></div>
+                        )}
+                        {currentView === 'mcp' && (
+                            <div className="h-full overflow-hidden"><AgentMCPServers /></div>
+                        )}
                         {currentView === 'files' && (
-                            <div className="p-6 h-full overflow-hidden"><AgentFiles /></div>
+                            <div className="p-6 h-full overflow-hidden"><AgentFiles currentContextId={currentSessionId || undefined} /></div>
                         )}
                         {currentView === 'backups' && (
                             <div className="p-6 h-full overflow-hidden"><AgentBackups /></div>
@@ -393,6 +440,8 @@ const App: React.FC = () => {
             )}
         </>
       )}
+      </div>
+      <Toaster />
     </div>
   );
 };

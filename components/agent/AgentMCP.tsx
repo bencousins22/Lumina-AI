@@ -20,19 +20,30 @@ export const AgentMCP: React.FC = () => {
     try {
       const data = await agentService.getMCPServers();
       setServers(data || []);
-      // Mock initial config load
-      setConfigJson(JSON.stringify({ mcpServers: {} }, null, 4));
+      
+      // Load actual settings to get MCP config
+      const settings = await agentService.getSettings();
+      if (settings && settings.mcp_servers) {
+          setConfigJson(JSON.stringify({ mcpServers: settings.mcp_servers }, null, 4));
+      } else {
+          setConfigJson(JSON.stringify({ mcpServers: {} }, null, 4));
+      }
     } catch(e) { console.error(e); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { loadServers(); }, []);
 
-  const handleSaveConfig = () => {
-      // In a real app, this would call an API
-      console.log("Saving config:", configJson);
-      setConfigOpen(false);
-      loadServers();
+  const handleSaveConfig = async () => {
+      try {
+          const config = JSON.parse(configJson);
+          await agentService.applyMCPServers(config);
+          setConfigOpen(false);
+          loadServers();
+      } catch (e) {
+          console.error("Failed to save MCP config:", e);
+          alert("Invalid JSON or failed to apply configuration");
+      }
   };
 
   return (

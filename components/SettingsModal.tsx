@@ -213,7 +213,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                                             <SelectContent>
                                                 <SelectItem value="openai">OpenAI</SelectItem>
                                                 <SelectItem value="anthropic">Anthropic</SelectItem>
-                                                <SelectItem value="google">Google Gemini</SelectItem>
                                                 <SelectItem value="ollama">Ollama (Local)</SelectItem>
                                                 <SelectItem value="openrouter">OpenRouter</SelectItem>
                                             </SelectContent>
@@ -231,7 +230,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                                         <Switch 
                                             id="vision"
                                             checked={localConfig.chat_model_vision} 
-                                            onChange={e => handleChange('chat_model_vision', e.target.checked)} 
+                                            onCheckedChange={checked => handleChange('chat_model_vision', checked)} 
                                         />
                                     </div>
                                 </div>
@@ -258,7 +257,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                                 </div>
                                 <Switch 
                                     checked={localConfig.memory_recall_enabled} 
-                                    onChange={e => handleChange('memory_recall_enabled', e.target.checked)} 
+                                    onCheckedChange={checked => handleChange('memory_recall_enabled', checked)} 
                                 />
                             </div>
 
@@ -282,7 +281,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                                         <Switch 
                                             id="docker"
                                             checked={localConfig.rfc_auto_docker} 
-                                            onChange={e => handleChange('rfc_auto_docker', e.target.checked)} 
+                                            onCheckedChange={checked => handleChange('rfc_auto_docker', checked)} 
                                         />
                                     </div>
                                 </div>

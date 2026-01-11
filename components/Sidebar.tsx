@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Settings, Folder, Activity, Database, Calendar, MessageSquare, FolderGit2, User, ChevronsUpDown, LogOut, Home } from 'lucide-react';
+import { Settings, Folder, Activity, Database, Calendar, MessageSquare, FolderGit2, User, ChevronsUpDown, LogOut, Home, Brain, Server } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
+import { NotificationCenter } from './agent/NotificationCenter';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       { id: 'home', icon: Home, label: 'Home' },
       { id: 'chat', icon: MessageSquare, label: 'Chat' },
       { id: 'projects', icon: FolderGit2, label: 'Projects' },
+      { id: 'memory', icon: Brain, label: 'Memory' },
+      { id: 'mcp', icon: Server, label: 'MCP Servers' },
       { id: 'dashboard', icon: Activity, label: 'Connectivity' },
       { id: 'scheduler', icon: Calendar, label: 'Tasks' },
       { id: 'files', icon: Folder, label: 'Files' },
@@ -65,6 +68,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="mt-auto px-2 w-full flex flex-col gap-4">
          <div className="w-full h-px bg-border/50" />
          
+         <NotificationCenter />
+
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button

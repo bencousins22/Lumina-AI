@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Command, MoreVertical, Trash2, RotateCcw, Download, Box, Sparkles, Terminal, Search, PenTool, BrainCircuit, ArrowRight } from 'lucide-react';
+import { Command, MoreVertical, Trash2, RotateCcw, Download, Box, Sparkles, Terminal, Search, PenTool, BrainCircuit, ArrowRight, Pause, Play, Zap, Power } from 'lucide-react';
 import { Button } from './ui/button';
 import { Message as MessageType, AIConfig } from '../types';
 import { 
@@ -23,10 +23,14 @@ interface ChatPanelProps {
     setInput: (val: string) => void;
     onSendMessage: (files: File[]) => void;
     isStreaming: boolean;
+    isPaused?: boolean;
     aiConfig: AIConfig;
     onResetChat?: () => void;
     onTerminateChat?: () => void;
     onExportChat?: () => void;
+    onPauseChat?: () => void;
+    onNudgeChat?: () => void;
+    onRestartFramework?: () => void;
     bottomPadding?: boolean;
     variant?: 'full' | 'sidebar';
 }
@@ -64,10 +68,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     setInput,
     onSendMessage,
     isStreaming,
+    isPaused,
     aiConfig,
     onResetChat,
     onTerminateChat,
     onExportChat,
+    onPauseChat,
+    onNudgeChat,
+    onRestartFramework,
     bottomPadding = false,
     variant = 'full'
 }) => {
@@ -148,6 +156,44 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                 
                 <div className="flex items-center gap-1 ml-2 shrink-0">
                     {!isSidebar && (
+                        <div className="hidden lg:flex items-center gap-2 mr-2">
+                             <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={onPauseChat}
+                                className={cn("h-8 gap-2 border-border/50", isPaused && "bg-orange-500/10 border-orange-500/50 text-orange-500 hover:bg-orange-500/20")}
+                            >
+                                {isPaused ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+                                <span className="hidden xl:inline">{isPaused ? 'Resume' : 'Pause'}</span>
+                            </Button>
+                            
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={onNudgeChat}
+                                className="h-8 gap-2 border-border/50"
+                                title="Nudge agent to continue if stuck"
+                            >
+                                <Zap size={14} className="text-yellow-500" fill="currentColor" />
+                                <span className="hidden xl:inline">Nudge</span>
+                            </Button>
+
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={onRestartFramework}
+                                className="h-8 gap-2 border-border/50 hover:text-destructive hover:border-destructive/50"
+                                title="Restart Framework"
+                            >
+                                <Power size={14} />
+                                <span className="hidden xl:inline">Restart</span>
+                            </Button>
+
+                            <div className="h-4 w-px bg-border/50 mx-1" />
+                        </div>
+                    )}
+
+                    {!isSidebar && (
                         <div className="hidden md:flex items-center gap-2 mr-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50 hover:bg-muted transition-colors cursor-pointer" title="Current Model">
                             <Box size={12} className="text-primary" />
                             {aiConfig.model.split('/').pop()}
@@ -181,6 +227,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                         <div className="px-3 py-2 text-xs font-mono text-muted-foreground border-b border-border/50 mb-1">
                             Model: {aiConfig.model}
                         </div>
+                        <button onClick={() => { onPauseChat?.(); setShowMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-muted rounded-lg text-foreground transition-colors">
+                            {isPaused ? <Play size={16} /> : <Pause size={16} />} {isPaused ? 'Resume Agent' : 'Pause Agent'}
+                        </button>
+                        <button onClick={() => { onNudgeChat?.(); setShowMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-muted rounded-lg text-foreground transition-colors">
+                            <Zap size={16} className="text-yellow-500" /> Nudge Agent
+                        </button>
+                        <div className="h-px bg-border my-1" />
                         <button onClick={() => { onResetChat?.(); setShowMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-muted rounded-lg text-foreground transition-colors">
                             <RotateCcw size={16} /> Reset Context
                         </button>

@@ -82,7 +82,7 @@ export const Logo = ({ className, variant = 'full' }: LogoProps) => {
           fontFamily="Inter, ui-sans-serif, system-ui"
           letterSpacing="0.04em"
         >
-          LUMINA A.I
+          LUMINA
         </text>
       )}
     </svg>

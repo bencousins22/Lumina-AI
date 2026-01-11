@@ -149,8 +149,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
                       <div className="text-xs text-muted-foreground">Active Model</div>
-                      <div className="font-mono text-sm font-medium truncate" title={agentConfig.chat_model_name}>
-                          {agentConfig.chat_model_name.split('/').pop()}
+                      <div className="font-mono text-sm font-medium truncate" title={agentConfig?.chat_model_name}>
+                          {agentConfig?.chat_model_name?.split('/').pop() || 'Loading...'}
                       </div>
                       <div className="h-1 w-full bg-emerald-500/20 rounded-full overflow-hidden">
                           <div className="h-full bg-emerald-500 w-full animate-pulse" />
@@ -159,7 +159,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                    <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
                       <div className="text-xs text-muted-foreground">Memory Status</div>
                       <div className="font-mono text-sm font-medium">
-                          {agentConfig.memory_recall_enabled ? 'Vector Store Active' : 'Ephemeral'}
+                          {agentConfig?.memory_recall_enabled ? 'Vector Store Active' : 'Ephemeral'}
                       </div>
                       <div className="h-1 w-full bg-blue-500/20 rounded-full overflow-hidden">
                           <div className="h-full bg-blue-500 w-[80%]" />

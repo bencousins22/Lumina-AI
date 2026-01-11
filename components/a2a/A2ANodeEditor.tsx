@@ -576,10 +576,10 @@ const NodeEditorContent: React.FC = () => {
          {/* Top Actions Bar */}
          <Panel position="top-right" className="mr-4 mt-2 bg-transparent border-0 shadow-none p-0">
             <div className="flex gap-2">
-                <Button 
-                    size="sm" 
-                    variant={isRunning ? "secondary" : "outline"} 
-                    className={cn("bg-card backdrop-blur shadow-sm transition-all hover:bg-accent border border-border", isRunning && "border-primary text-primary")}
+                <Button
+                    size="sm"
+                    variant={isRunning ? "secondary" : "outline"}
+                    className={cn("backdrop-blur shadow-sm transition-all border", isRunning && "border-primary text-primary")}
                     onClick={runSimulation}
                     disabled={isRunning}
                 >

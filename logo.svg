@@ -1,0 +1,73 @@
+<svg
+  width="480"
+  height="160"
+  viewBox="0 0 480 160"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+
+  <!-- Icon container -->
+  <circle
+    cx="80"
+    cy="80"
+    r="56"
+    stroke="url(#ringGradient)"
+    stroke-width="3"
+    opacity="0.9"
+  />
+
+  <circle
+    cx="80"
+    cy="80"
+    r="50"
+    fill="url(#bgGradient)"
+  />
+
+  <!-- Abstract AI mark (L + spark) -->
+  <path
+    d="M68 52 V108 H92"
+    stroke="url(#textGradient)"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <circle
+    cx="98"
+    cy="56"
+    r="3.5"
+    fill="#38BDF8"
+  />
+
+  <!-- Text: Lumina A.I -->
+  <text
+    x="160"
+    y="92"
+    fill="url(#textGradient)"
+    font-size="44"
+    font-weight="600"
+    font-family="Inter, ui-sans-serif, system-ui"
+    letter-spacing="0.04em"
+  >
+    LUMINA A.I
+  </text>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="ringGradient" x1="0" y1="0" x2="160" y2="160">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+
+    <radialGradient id="bgGradient">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+
+    <linearGradient id="textGradient" x1="0" y1="0" x2="0" y2="160">
+      <stop offset="0%" stop-color="#E0F2FE"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+
+</svg>
