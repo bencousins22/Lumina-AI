@@ -159,7 +159,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-11 bg-secondary/50 border-input text-foreground placeholder:text-muted-foreground"
+                        className="h-11 bg-white border-input text-black placeholder:text-gray-500"
                      />
                  </div>
                  <div className="space-y-2">
@@ -173,7 +173,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="h-11 bg-secondary/50 border-input text-foreground placeholder:text-muted-foreground"
+                        className="h-11 bg-white border-input text-black placeholder:text-gray-500"
                      />
                  </div>
 
