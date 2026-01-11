@@ -202,7 +202,7 @@ export const AgentScheduler: React.FC = () => {
 
       {/* Create Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md w-[90vw] max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                   <DialogTitle>Create Scheduled Task</DialogTitle>
                   <DialogDescription>
@@ -233,7 +233,7 @@ export const AgentScheduler: React.FC = () => {
                       <p className="text-[10px] text-muted-foreground">
                           Format: minute hour day(month) month day(week)
                       </p>
-                      <div className="flex gap-2 mt-2">
+                      <div className="flex flex-wrap gap-2 mt-2">
                           <Badge variant="outline" className="cursor-pointer hover:bg-accent" onClick={() => setNewTaskCron('0 9 * * *')}>Daily 9am</Badge>
                           <Badge variant="outline" className="cursor-pointer hover:bg-accent" onClick={() => setNewTaskCron('0 0 * * 0')}>Weekly</Badge>
                           <Badge variant="outline" className="cursor-pointer hover:bg-accent" onClick={() => setNewTaskCron('*/15 * * * *')}>Every 15m</Badge>

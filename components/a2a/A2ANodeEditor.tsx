@@ -172,7 +172,7 @@ const AgentNode = ({ data, selected }: any) => (
 // --- Sub-Components for Content Reuse ---
 
 const NodeLibraryContent = ({ addNode }: { addNode: (type: string, data: any) => void }) => (
-    <div className="grid gap-3 grid-cols-1 md:grid-cols-1">
+    <div className="grid gap-3 grid-cols-1 md:grid-cols-1 pb-4">
         <button onClick={() => addNode('trigger', { cron: '0 0 * * *' })} className="flex flex-col md:flex-row items-center md:items-start gap-3 p-3 rounded-lg border border-border bg-card hover:bg-amber-500/10 hover:border-amber-500/50 transition-all group text-center md:text-left shadow-sm">
         <div className="p-2 bg-amber-500/10 text-amber-500 rounded-md group-hover:bg-amber-500 group-hover:text-white transition-colors shadow-sm border border-amber-500/20">
             <Clock size={18} />
@@ -210,7 +210,7 @@ const PropertyInspectorContent = ({ selectedNode, updateNodeData, deleteSelected
     
     return (
         <div className="flex flex-col h-full bg-card">
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-20">
                 {selectedNode.type === 'trigger' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
                         <div className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-2">
@@ -330,7 +330,7 @@ const PropertyInspectorContent = ({ selectedNode, updateNodeData, deleteSelected
                 )}
             </div>
 
-            <div className="p-6 border-t border-border bg-muted/10 shrink-0 safe-pb">
+            <div className="p-6 border-t border-border bg-muted/10 shrink-0 mb-safe">
                 <Button 
                     variant="destructive" 
                     className="w-full shadow-sm" 
@@ -624,19 +624,19 @@ const NodeEditorContent: React.FC = () => {
          {isMobile && (
              <>
                 <Drawer open={libraryOpen} onOpenChange={setLibraryOpen}>
-                    <DrawerContent>
+                    <DrawerContent className="max-h-[60dvh] overflow-hidden flex flex-col">
                         <DrawerHeader>
                             <DrawerTitle className="text-center">Add Node</DrawerTitle>
                         </DrawerHeader>
-                        <div className="p-4">
+                        <div className="p-4 overflow-y-auto pb-12">
                             <NodeLibraryContent addNode={(t, d) => { addNode(t, d); setLibraryOpen(false); }} />
                         </div>
                     </DrawerContent>
                 </Drawer>
 
                 <Drawer open={!!selectedNodeId} onOpenChange={(open) => !open && setSelectedNodeId(null)}>
-                    <DrawerContent className="h-[85vh]">
-                        <DrawerHeader className="border-b border-border/50 pb-4">
+                    <DrawerContent className="h-[85vh] max-h-[85dvh] flex flex-col">
+                        <DrawerHeader className="border-b border-border/50 pb-4 shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                                     <Settings2 size={18} />
@@ -647,11 +647,13 @@ const NodeEditorContent: React.FC = () => {
                                 </div>
                             </div>
                         </DrawerHeader>
-                        <PropertyInspectorContent 
-                            selectedNode={selectedNode} 
-                            updateNodeData={updateNodeData} 
-                            deleteSelectedNode={deleteSelectedNode} 
-                        />
+                        <div className="flex-1 overflow-y-auto pb-12">
+                            <PropertyInspectorContent 
+                                selectedNode={selectedNode} 
+                                updateNodeData={updateNodeData} 
+                                deleteSelectedNode={deleteSelectedNode} 
+                            />
+                        </div>
                     </DrawerContent>
                 </Drawer>
              </>

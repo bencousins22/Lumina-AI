@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, Folder, Activity, Database, Calendar, MessageSquare, FolderGit2, User, ChevronsUpDown, LogOut } from 'lucide-react';
+import { Settings, Folder, Activity, Database, Calendar, MessageSquare, FolderGit2, User, ChevronsUpDown, LogOut, Home } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
 import {
@@ -24,6 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSettings
 }) => {
   const navItems = [
+      { id: 'home', icon: Home, label: 'Home' },
       { id: 'chat', icon: MessageSquare, label: 'Chat' },
       { id: 'projects', icon: FolderGit2, label: 'Projects' },
       { id: 'dashboard', icon: Activity, label: 'Connectivity' },
@@ -35,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside className="w-[72px] flex flex-col items-center py-4 bg-sidebar border-r border-sidebar-border shrink-0 z-40 transition-all duration-300">
       <div className="mb-6">
-        <div className="h-10 w-10 flex items-center justify-center bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-xl border border-white/10 shadow-sm">
+        <div className="h-10 w-10 flex items-center justify-center bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-xl border border-white/10 shadow-sm cursor-pointer" onClick={() => onChangeView('home')}>
              <Logo variant="icon" className="w-6 h-6" />
         </div>
       </div>

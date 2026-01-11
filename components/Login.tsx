@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { Loader2, Github, Chrome, Command, CheckCircle2 } from 'lucide-react';
+import { Loader2, Github, Chrome } from 'lucide-react';
 import { Logo } from './Logo';
-import { cn } from '../lib/utils';
 
 interface LoginProps {
   onLogin: () => void;
@@ -114,11 +113,11 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
              </div>
 
              <div className="space-y-4">
-                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal" disabled={isLoading}>
+                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal text-foreground" disabled={isLoading}>
                      <Github className="mr-3 h-4 w-4" />
                      Continue with GitHub
                  </Button>
-                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal" disabled={isLoading}>
+                 <Button variant="outline" className="w-full justify-start h-11 relative bg-background hover:bg-muted/50 border-input font-normal text-foreground" disabled={isLoading}>
                      <Chrome className="mr-3 h-4 w-4 text-blue-500" />
                      Continue with Google
                  </Button>
@@ -143,7 +142,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-11 bg-muted/20"
+                        className="h-11 bg-secondary/50 border-input text-foreground placeholder:text-muted-foreground"
                      />
                  </div>
                  <div className="space-y-2">
@@ -157,7 +156,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="h-11 bg-muted/20"
+                        className="h-11 bg-secondary/50 border-input text-foreground placeholder:text-muted-foreground"
                      />
                  </div>
 

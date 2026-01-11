@@ -8,6 +8,7 @@ import { AgentFiles } from './components/agent/AgentFiles';
 import { AgentBackups } from './components/agent/AgentBackups';
 import { AgentScheduler } from './components/agent/AgentScheduler';
 import { AgentProjects } from './components/agent/AgentProjects';
+import { HomeDashboard } from './components/HomeDashboard';
 import { ArtifactPanel } from './components/ArtifactPanel';
 import { MobileNavBar } from './components/MobileNavBar';
 import { Login } from './components/Login';
@@ -21,7 +22,7 @@ import { cn } from './lib/utils';
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [currentView, setCurrentView] = useState('chat');
+  const [currentView, setCurrentView] = useState('home'); // Default to home
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [input, setInput] = useState('');
@@ -65,7 +66,7 @@ const App: React.FC = () => {
     const checkMobile = () => {
         const mobile = window.innerWidth < 1024;
         setIsMobile(mobile);
-        if (mobile && currentView === 'dashboard') setCurrentView('chat');
+        // Don't auto-switch view on resize, let user stay where they are
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -101,6 +102,12 @@ const App: React.FC = () => {
           }
       }
   }, []);
+
+  // Centralized Navigation Handler
+  const handleViewChange = (view: string) => {
+    setCurrentView(view);
+    setIsSettingsOpen(false); // Close settings on navigation
+  };
 
   const saveConfig = (newConfig: AgentConfig) => {
       setAgentConfig(newConfig);
@@ -260,7 +267,7 @@ const App: React.FC = () => {
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground font-sans selection:bg-primary/20">
       <CommandMenu 
-        onNavigate={setCurrentView}
+        onNavigate={handleViewChange}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onLogout={() => setIsAuthenticated(false)}
       />
@@ -277,14 +284,17 @@ const App: React.FC = () => {
       {!isMobile && (
         <Sidebar 
             currentView={currentView}
-            onChangeView={setCurrentView}
+            onChangeView={handleViewChange}
             onOpenSettings={() => setIsSettingsOpen(true)}
         />
       )}
 
       {isMobile ? (
         <div className="flex flex-col h-full w-full relative">
-            <main className="flex-1 h-full overflow-hidden relative pb-[60px]">
+            <main 
+                className="flex-1 h-full overflow-hidden relative pb-[calc(60px+env(safe-area-inset-bottom))]"
+            >
+                {currentView === 'home' && <HomeDashboard onNavigate={handleViewChange} onOpenSettings={() => setIsSettingsOpen(true)} agentConfig={agentConfig} />}
                 {currentView === 'chat' && (
                     <ChatPanel 
                         messages={messages}
@@ -308,34 +318,38 @@ const App: React.FC = () => {
             
             <MobileNavBar 
                 currentView={currentView}
-                onChangeView={setCurrentView}
+                onChangeView={handleViewChange}
                 onOpenSettings={() => setIsSettingsOpen(true)}
             />
         </div>
       ) : (
         <>
             {/* Desktop Layout */}
-            {/* Chat Panel - acts as primary content in chat view, or sidebar in other views */}
+            
+            {/* Chat Panel - Only visible in Chat View or when toggled */}
             <div 
                 className={cn(
                     "flex-shrink-0 bg-background border-r border-border transition-all duration-300 relative flex flex-col z-10",
-                    isChatView ? "w-full" : (isChatPanelOpen ? "w-[400px]" : "w-0 overflow-hidden")
+                    isChatView ? "w-full" : (isChatPanelOpen && currentView !== 'home' ? "w-[400px]" : "w-0 overflow-hidden")
                 )}
             >
-                <ChatPanel 
-                    messages={messages}
-                    input={input}
-                    setInput={setInput}
-                    onSendMessage={handleSendMessage}
-                    isStreaming={isStreaming}
-                    aiConfig={aiConfig}
-                    onResetChat={handleResetChat}
-                    onTerminateChat={handleTerminateChat}
-                    onExportChat={handleExportChat}
-                />
+                {/* Don't render ChatPanel content if width is 0 to save resources */}
+                {(isChatView || isChatPanelOpen) && (
+                     <ChatPanel 
+                        messages={messages}
+                        input={input}
+                        setInput={setInput}
+                        onSendMessage={handleSendMessage}
+                        isStreaming={isStreaming}
+                        aiConfig={aiConfig}
+                        onResetChat={handleResetChat}
+                        onTerminateChat={handleTerminateChat}
+                        onExportChat={handleExportChat}
+                    />
+                )}
                 
-                {/* Toggle Button - Only visible when NOT in chat view */}
-                {!isChatView && (
+                {/* Toggle Button - Visible when NOT in chat view and NOT in home view */}
+                {!isChatView && currentView !== 'home' && (
                     <button 
                         onClick={() => setIsChatPanelOpen(!isChatPanelOpen)}
                         className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 h-6 w-6 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground shadow-sm"
@@ -345,10 +359,11 @@ const App: React.FC = () => {
                 )}
             </div>
 
-            {/* Main Workspace Area - Hidden in chat view */}
+            {/* Main Workspace Area - Hidden in pure Chat view */}
             {!isChatView && (
                 <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-muted/30">
                     <div className="flex-1 overflow-hidden relative">
+                        {currentView === 'home' && <HomeDashboard onNavigate={handleViewChange} onOpenSettings={() => setIsSettingsOpen(true)} agentConfig={agentConfig} />}
                         {currentView === 'dashboard' && <A2ANodeEditor />}
                         {currentView === 'projects' && (
                             <div className="p-6 h-full overflow-hidden"><AgentProjects currentContextId={currentSessionId || undefined} /></div>
