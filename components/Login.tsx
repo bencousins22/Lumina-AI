@@ -24,7 +24,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     try {
       // Login to agent-zero backend
       const formData = new URLSearchParams();
-      formData.append('login', email);
+      formData.append('user', email);
       formData.append('password', password);
 
       const response = await fetch('http://localhost:50080/login', {
