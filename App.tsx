@@ -94,19 +94,36 @@ const App: React.FC = () => {
   }, [sessions]);
 
   useEffect(() => {
-      const savedConfig = localStorage.getItem('agent_zero_config');
-      if (savedConfig) {
-          try {
-              const parsed = JSON.parse(savedConfig);
-              setAgentConfig({ ...DEFAULT_AGENT_CONFIG, ...parsed });
-              if (parsed.api_keys?.default) {
-                  agentService.setApiKey(parsed.api_keys.default);
+      const loadConfig = async () => {
+          // First try localStorage
+          const savedConfig = localStorage.getItem('agent_zero_config');
+          if (savedConfig) {
+              try {
+                  const parsed = JSON.parse(savedConfig);
+                  setAgentConfig({ ...DEFAULT_AGENT_CONFIG, ...parsed });
+                  if (parsed.api_keys?.default) {
+                      agentService.setApiKey(parsed.api_keys.default);
+                  }
+              } catch(e) {
+                  console.error("Failed to parse saved config", e);
               }
-          } catch(e) {
-              console.error("Failed to parse saved config", e);
           }
-      }
-  }, []);
+
+          // Then try to load from backend (will overwrite localStorage if authenticated)
+          if (isAuthenticated) {
+              try {
+                  const backendSettings = await agentService.getSettings();
+                  if (backendSettings) {
+                      setAgentConfig({ ...DEFAULT_AGENT_CONFIG, ...backendSettings });
+                      localStorage.setItem('agent_zero_config', JSON.stringify(backendSettings));
+                  }
+              } catch (error) {
+                  console.error('Failed to load settings from backend:', error);
+              }
+          }
+      };
+      loadConfig();
+  }, [isAuthenticated]);
 
   // Centralized Navigation Handler
   const handleViewChange = (view: string) => {
@@ -114,11 +131,17 @@ const App: React.FC = () => {
     setIsSettingsOpen(false); // Close settings on navigation
   };
 
-  const saveConfig = (newConfig: AgentConfig) => {
+  const saveConfig = async (newConfig: AgentConfig) => {
       setAgentConfig(newConfig);
       localStorage.setItem('agent_zero_config', JSON.stringify(newConfig));
       if (newConfig.api_keys?.default) {
           agentService.setApiKey(newConfig.api_keys.default);
+      }
+      // Save to backend
+      try {
+          await agentService.setSettings(newConfig);
+      } catch (error) {
+          console.error('Failed to save settings to backend:', error);
       }
   };
 
