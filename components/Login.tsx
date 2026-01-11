@@ -16,21 +16,38 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
-    // Simulate auth check
-    setTimeout(() => {
-      if (email && password) {
-          setIsLoading(false);
-          onLogin();
+
+    try {
+      // Login to agent-zero backend
+      const formData = new URLSearchParams();
+      formData.append('login', email);
+      formData.append('password', password);
+
+      const response = await fetch('http://localhost:50080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString(),
+        credentials: 'include', // Important: include cookies
+      });
+
+      if (response.ok) {
+        setIsLoading(false);
+        onLogin();
       } else {
-          setIsLoading(false);
-          setError('Invalid credentials');
+        setIsLoading(false);
+        setError('Invalid credentials. Please try again.');
       }
-    }, 1500);
+    } catch (error) {
+      console.error('Login error:', error);
+      setIsLoading(false);
+      setError('Failed to connect to server. Please check if the agent-zero backend is running.');
+    }
   };
 
   return (

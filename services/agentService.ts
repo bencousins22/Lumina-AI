@@ -1,13 +1,13 @@
 
 import { AttachmentPayload, ApiLogResponse, AgentConfig, BackupCreateConfig, RestorePreviewResult, Backup } from '../types';
 
-// Use config from window if available, otherwise default to /api
+// Use config from window if available, otherwise default to root
 const getBaseUrl = () => {
   if (typeof window !== 'undefined' && (window as any).AGENT_ZERO_CONFIG) {
     return (window as any).AGENT_ZERO_CONFIG.apiBaseUrl;
   }
-  // Default to localhost:50080 for Electron integration
-  return 'http://localhost:50080/api';
+  // Default to localhost:50080 for Electron integration (no /api suffix - endpoints are at root)
+  return 'http://localhost:50080';
 };
 
 const BASE_URL = getBaseUrl();
