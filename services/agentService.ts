@@ -71,6 +71,13 @@ class AgentService {
       this.apiKey = key;
   }
 
+  // Call this after login to fetch CSRF token
+  async fetchCsrfToken(): Promise<void> {
+    this.csrfToken = ''; // Reset token
+    this.csrfPromise = null;
+    return this.ensureCsrfToken();
+  }
+
   private async ensureCsrfToken(): Promise<void> {
     if (this.csrfToken) return;
 
@@ -90,7 +97,10 @@ class AgentService {
           const data = await response.json();
           if (data.ok && data.token) {
             this.csrfToken = data.token;
+            console.log('CSRF token fetched successfully');
           }
+        } else {
+          console.warn('Failed to fetch CSRF token - not authenticated?');
         }
       } catch (error) {
         console.warn('Failed to fetch CSRF token:', error);
@@ -103,8 +113,9 @@ class AgentService {
   }
 
   private async request<T>(endpoint: string, options: RequestInit & { silent?: boolean } = {}): Promise<T> {
-    // Fetch CSRF token if needed (skip for GET requests and csrf_token endpoint)
-    if (endpoint !== 'csrf_token' && (!options.method || options.method !== 'GET')) {
+    // Fetch CSRF token if needed (skip only for csrf_token endpoint itself)
+    // All authenticated API endpoints require CSRF token, including GET requests
+    if (endpoint !== 'csrf_token') {
       await this.ensureCsrfToken();
     }
 

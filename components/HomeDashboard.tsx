@@ -143,40 +143,28 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <Card className="lg:col-span-2 p-6 border-border/50 bg-card/50">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Cpu size={18} className="text-primary" /> 
-                  System Resources
+                  <Cpu size={18} className="text-primary" />
+                  Agent Configuration
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
-                      <div className="text-xs text-muted-foreground">Active Model</div>
+                      <div className="text-xs text-muted-foreground">Active Chat Model</div>
                       <div className="font-mono text-sm font-medium truncate" title={agentConfig?.chat_model_name}>
-                          {agentConfig?.chat_model_name?.split('/').pop() || 'Loading...'}
+                          {agentConfig?.chat_model_name || 'Not configured'}
                       </div>
-                      <div className="h-1 w-full bg-emerald-500/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 w-full animate-pulse" />
-                      </div>
+                      {agentConfig?.chat_model_name && (
+                        <div className="h-1 w-full bg-emerald-500/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 w-full" />
+                        </div>
+                      )}
                   </div>
                    <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
-                      <div className="text-xs text-muted-foreground">Memory Status</div>
+                      <div className="text-xs text-muted-foreground">Memory System</div>
                       <div className="font-mono text-sm font-medium">
-                          {agentConfig?.memory_recall_enabled ? 'Vector Store Active' : 'Ephemeral'}
+                          {agentConfig?.memory_recall_enabled ? 'Vector Store Active' : 'Ephemeral Mode'}
                       </div>
                       <div className="h-1 w-full bg-blue-500/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500 w-[80%]" />
-                      </div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
-                      <div className="text-xs text-muted-foreground">Uptime</div>
-                      <div className="font-mono text-sm font-medium">04:22:18</div>
-                      <div className="h-1 w-full bg-amber-500/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-500 w-full" />
-                      </div>
-                  </div>
-                   <div className="p-4 rounded-xl bg-background border border-border/50 space-y-2">
-                      <div className="text-xs text-muted-foreground">API Latency</div>
-                      <div className="font-mono text-sm font-medium">~120ms</div>
-                      <div className="h-1 w-full bg-purple-500/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-purple-500 w-[30%]" />
+                          <div className={`h-full bg-blue-500 ${agentConfig?.memory_recall_enabled ? 'w-full' : 'w-[30%]'}`} />
                       </div>
                   </div>
               </div>

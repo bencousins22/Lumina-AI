@@ -5,6 +5,7 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Loader2 } from 'lucide-react';
 import { Logo } from './Logo';
+import { agentService } from '../services/agentService';
 
 interface LoginProps {
   onLogin: () => void;
@@ -37,6 +38,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       });
 
       if (response.ok) {
+        // Fetch CSRF token after successful login
+        await agentService.fetchCsrfToken();
         setIsLoading(false);
         onLogin();
       } else {
