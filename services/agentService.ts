@@ -113,11 +113,8 @@ class AgentService {
   }
 
   private async request<T>(endpoint: string, options: RequestInit & { silent?: boolean } = {}): Promise<T> {
-    // Fetch CSRF token if needed (skip only for csrf_token endpoint itself)
-    // All authenticated API endpoints require CSRF token, including GET requests
-    if (endpoint !== 'csrf_token') {
-      await this.ensureCsrfToken();
-    }
+    // Don't automatically fetch CSRF token - it must be fetched explicitly after login
+    // via fetchCsrfToken() method
 
     const { silent, ...fetchOptions } = options;
     const headers = {
