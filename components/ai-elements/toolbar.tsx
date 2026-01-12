@@ -1,14 +1,16 @@
+import { cn } from "@/lib/utils";
+import { NodeToolbar, Position } from "@xyflow/react";
+import type { ComponentProps } from "react";
 
-import React from 'react';
-import { NodeToolbar, NodeToolbarProps } from '@xyflow/react';
-import { cn } from '../../lib/utils';
+type ToolbarProps = ComponentProps<typeof NodeToolbar>;
 
-export const Toolbar = React.forwardRef<HTMLDivElement, NodeToolbarProps & React.HTMLAttributes<HTMLDivElement>>(({ className, children, ...props }, ref) => (
-  <NodeToolbar 
-    className={cn("flex gap-1 items-center p-1 bg-card border border-border rounded-lg shadow-md", className)} 
+export const Toolbar = ({ className, ...props }: ToolbarProps) => (
+  <NodeToolbar
+    className={cn(
+      "flex items-center gap-1 rounded-sm border bg-background p-1.5",
+      className
+    )}
+    position={Position.Bottom}
     {...props}
-  >
-    {children}
-  </NodeToolbar>
-));
-Toolbar.displayName = "Toolbar";
+  />
+);

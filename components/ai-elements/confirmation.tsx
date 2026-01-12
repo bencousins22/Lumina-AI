@@ -1,33 +1,182 @@
+"use client";
 
-import React from 'react';
-import { cn } from '../../lib/utils';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { ToolUIPart } from "ai";
+import {
+  type ComponentProps,
+  createContext,
+  type ReactNode,
+  useContext,
+} from "react";
 
-interface ConfirmationProps {
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  className?: string;
-}
+type ToolUIPartApproval =
+  | {
+      id: string;
+      approved?: never;
+      reason?: never;
+    }
+  | {
+      id: string;
+      approved: boolean;
+      reason?: string;
+    }
+  | {
+      id: string;
+      approved: true;
+      reason?: string;
+    }
+  | {
+      id: string;
+      approved: true;
+      reason?: string;
+    }
+  | {
+      id: string;
+      approved: false;
+      reason?: string;
+    }
+  | undefined;
 
-export const Confirmation: React.FC<ConfirmationProps> = ({ title, description, onConfirm, onCancel, className }) => {
+type ConfirmationContextValue = {
+  approval: ToolUIPartApproval;
+  state: ToolUIPart["state"];
+};
+
+const ConfirmationContext = createContext<ConfirmationContextValue | null>(
+  null
+);
+
+const useConfirmation = () => {
+  const context = useContext(ConfirmationContext);
+
+  if (!context) {
+    throw new Error("Confirmation components must be used within Confirmation");
+  }
+
+  return context;
+};
+
+export type ConfirmationProps = ComponentProps<typeof Alert> & {
+  approval?: ToolUIPartApproval;
+  state: ToolUIPart["state"];
+};
+
+export const Confirmation = ({
+  className,
+  approval,
+  state,
+  ...props
+}: ConfirmationProps) => {
+  if (!approval || state === "input-streaming" || state === "input-available") {
+    return null;
+  }
+
   return (
-    <div className={cn("p-4 border border-amber-500/30 bg-amber-500/5 rounded-xl my-4", className)}>
-      <div className="flex gap-3">
-        <div className="p-2 bg-amber-500/10 text-amber-500 rounded-lg h-fit">
-            <AlertTriangle size={20} />
-        </div>
-        <div className="flex-1">
-            <h4 className="font-semibold text-sm text-foreground mb-1">{title}</h4>
-            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{description}</p>
-            <div className="flex gap-2">
-                <Button size="sm" onClick={onConfirm} className="bg-amber-600 hover:bg-amber-700 text-white">Approve</Button>
-                <Button size="sm" variant="ghost" onClick={onCancel}>Deny</Button>
-            </div>
-        </div>
-      </div>
-    </div>
+    <ConfirmationContext.Provider value={{ approval, state }}>
+      <Alert className={cn("flex flex-col gap-2", className)} {...props} />
+    </ConfirmationContext.Provider>
   );
 };
+
+export type ConfirmationTitleProps = ComponentProps<typeof AlertDescription>;
+
+export const ConfirmationTitle = ({
+  className,
+  ...props
+}: ConfirmationTitleProps) => (
+  <AlertDescription className={cn("inline", className)} {...props} />
+);
+
+export type ConfirmationRequestProps = {
+  children?: ReactNode;
+};
+
+export const ConfirmationRequest = ({ children }: ConfirmationRequestProps) => {
+  const { state } = useConfirmation();
+
+  // Only show when approval is requested
+  // @ts-expect-error state only available in AI SDK v6
+  if (state !== "approval-requested") {
+    return null;
+  }
+
+  return children;
+};
+
+export type ConfirmationAcceptedProps = {
+  children?: ReactNode;
+};
+
+export const ConfirmationAccepted = ({
+  children,
+}: ConfirmationAcceptedProps) => {
+  const { approval, state } = useConfirmation();
+
+  // Only show when approved and in response states
+  if (
+    !approval?.approved ||
+        // @ts-expect-error state only available in AI SDK v6
+    (state !== "approval-responded" &&
+        // @ts-expect-error state only available in AI SDK v6
+      state !== "output-denied" &&
+      state !== "output-available")
+  ) {
+    return null;
+  }
+
+  return children;
+};
+
+export type ConfirmationRejectedProps = {
+  children?: ReactNode;
+};
+
+export const ConfirmationRejected = ({
+  children,
+}: ConfirmationRejectedProps) => {
+  const { approval, state } = useConfirmation();
+
+  // Only show when rejected and in response states
+  if (
+    approval?.approved !== false ||
+        // @ts-expect-error state only available in AI SDK v6
+    (state !== "approval-responded" &&
+        // @ts-expect-error state only available in AI SDK v6
+      state !== "output-denied" &&
+      state !== "output-available")
+  ) {
+    return null;
+  }
+
+  return children;
+};
+
+export type ConfirmationActionsProps = ComponentProps<"div">;
+
+export const ConfirmationActions = ({
+  className,
+  ...props
+}: ConfirmationActionsProps) => {
+  const { state } = useConfirmation();
+
+  // Only show when approval is requested
+  // @ts-expect-error state only available in AI SDK v6
+  if (state !== "approval-requested") {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn("flex items-center justify-end gap-2 self-end", className)}
+      {...props}
+    />
+  );
+};
+
+export type ConfirmationActionProps = ComponentProps<typeof Button>;
+
+export const ConfirmationAction = (props: ConfirmationActionProps) => (
+  <Button className="h-8 px-3 text-sm" type="button" {...props} />
+);

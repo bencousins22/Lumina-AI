@@ -1,25 +1,56 @@
+"use client";
 
-import React from 'react';
-import { cn } from '../../lib/utils';
-import { Sparkles } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  ScrollArea,
+  ScrollBar,
+} from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import type { ComponentProps } from "react";
 
-interface SuggestionProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-}
+export type SuggestionsProps = ComponentProps<typeof ScrollArea>;
 
-export const Suggestion: React.FC<SuggestionProps> = ({ children, onClick, className }) => {
+export const Suggestions = ({
+  className,
+  children,
+  ...props
+}: SuggestionsProps) => (
+  <ScrollArea className="w-full overflow-x-auto whitespace-nowrap" {...props}>
+    <div className={cn("flex w-max flex-nowrap items-center gap-2", className)}>
+      {children}
+    </div>
+    <ScrollBar className="hidden" orientation="horizontal" />
+  </ScrollArea>
+);
+
+export type SuggestionProps = Omit<ComponentProps<typeof Button>, "onClick"> & {
+  suggestion: string;
+  onClick?: (suggestion: string) => void;
+};
+
+export const Suggestion = ({
+  suggestion,
+  onClick,
+  className,
+  variant = "outline",
+  size = "sm",
+  children,
+  ...props
+}: SuggestionProps) => {
+  const handleClick = () => {
+    onClick?.(suggestion);
+  };
+
   return (
-    <button 
-        onClick={onClick}
-        className={cn(
-            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/30 border border-border text-xs text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 transition-all cursor-pointer whitespace-nowrap",
-            className
-        )}
+    <Button
+      className={cn("cursor-pointer rounded-full px-4", className)}
+      onClick={handleClick}
+      size={size}
+      type="button"
+      variant={variant}
+      {...props}
     >
-        <span className="opacity-50"><Sparkles size={10} /></span>
-        {children}
-    </button>
+      {children || suggestion}
+    </Button>
   );
 };

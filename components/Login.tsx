@@ -28,7 +28,10 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       formData.append('username', email);
       formData.append('password', password);
 
-      const response = await fetch('http://localhost:50080/login', {
+      // Get base URL from agentService configuration
+      const baseUrl = (window as any).AGENT_ZERO_CONFIG?.apiBaseUrl || 'http://localhost:50080';
+
+      const response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

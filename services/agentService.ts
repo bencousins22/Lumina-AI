@@ -648,6 +648,77 @@ class AgentService {
     async clearNotifications(): Promise<void> {
         await this.request('notifications_clear', { method: 'POST' });
     }
+
+    // --- Workflow Persistence (LocalStorage) ---
+    async getWorkflow(id: string): Promise<{ nodes: any[], edges: any[] } | null> {
+        try {
+            const saved = localStorage.getItem(`workflow_${id}`);
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            console.error('Failed to load workflow:', e);
+            return null;
+        }
+    }
+
+    async saveWorkflow(id: string, nodes: any[], edges: any[]): Promise<void> {
+        try {
+            localStorage.setItem(`workflow_${id}`, JSON.stringify({ nodes, edges }));
+        } catch (e) {
+            console.error('Failed to save workflow:', e);
+            throw e;
+        }
+    }
+
+    async listWorkflows(): Promise<any[]> {
+        try {
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('workflow_'));
+            return keys.map(k => {
+                const id = k.replace('workflow_', '');
+                const data = localStorage.getItem(k);
+                return { id, ...(data ? JSON.parse(data) : {}) };
+            });
+        } catch (e) {
+            console.error('Failed to list workflows:', e);
+            return [];
+        }
+    }
+
+    async deleteWorkflow(id: string): Promise<void> {
+        try {
+            localStorage.removeItem(`workflow_${id}`);
+        } catch (e) {
+            console.error('Failed to delete workflow:', e);
+            throw e;
+        }
+    }
+
+    // --- Memory Dashboard Statistics ---
+    async getMemoryStats(projectName?: string): Promise<{ total: number, knowledge: number, conversation: number }> {
+        try {
+            const payload: any = { action: 'stats' };
+            if (projectName) {
+                payload.project = projectName;
+            }
+
+            const res = await this.request<{ ok: boolean, data: any }>('memory_dashboard', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok || !res.data) {
+                return { total: 0, knowledge: 0, conversation: 0 };
+            }
+
+            return {
+                total: res.data.total || 0,
+                knowledge: res.data.knowledge || 0,
+                conversation: res.data.conversation || 0
+            };
+        } catch (e) {
+            console.error('Failed to get memory stats:', e);
+            return { total: 0, knowledge: 0, conversation: 0 };
+        }
+    }
 }
 
 export const agentService = new AgentService();

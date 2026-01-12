@@ -36,7 +36,8 @@ export const AgentProjects: React.FC<AgentProjectsProps> = ({ currentContextId }
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [activeTab, setActiveTab] = useState('all');
-    
+    const [totalKnowledgeCount, setTotalKnowledgeCount] = useState<number>(0);
+
     // Create/Edit State
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -52,6 +53,18 @@ export const AgentProjects: React.FC<AgentProjectsProps> = ({ currentContextId }
                 const active = (data as any).active_project || '';
                 setProjects(list);
                 setActiveProject(active);
+
+                // Fetch memory stats for all projects
+                let totalKnowledge = 0;
+                for (const project of list) {
+                    try {
+                        const stats = await agentService.getMemoryStats(project.name);
+                        totalKnowledge += stats.knowledge;
+                    } catch (e) {
+                        console.error(`Failed to fetch stats for ${project.name}:`, e);
+                    }
+                }
+                setTotalKnowledgeCount(totalKnowledge);
             }
         } catch (e) {
             console.error(e);
@@ -169,10 +182,10 @@ export const AgentProjects: React.FC<AgentProjectsProps> = ({ currentContextId }
                         icon={Activity} 
                         colorClass={activeProject ? "text-emerald-500" : "text-muted-foreground"}
                     />
-                    <StatsCard 
-                        title="Knowledge Bases" 
-                        value={projects.length * 2} 
-                        icon={Database} 
+                    <StatsCard
+                        title="Knowledge Bases"
+                        value={totalKnowledgeCount}
+                        icon={Database}
                         colorClass="text-amber-500"
                     /> 
                 </div>

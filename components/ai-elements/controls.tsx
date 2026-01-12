@@ -1,12 +1,18 @@
+"use client";
 
-import React from 'react';
-import { Controls as ReactFlowControls, ControlProps } from '@xyflow/react';
-import { cn } from '../../lib/utils';
+import { cn } from "@/lib/utils";
+import { Controls as ControlsPrimitive } from "@xyflow/react";
+import type { ComponentProps } from "react";
 
-export const Controls = React.forwardRef<HTMLDivElement, ControlProps & React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <ReactFlowControls 
-    className={cn("!bg-card !border-border !fill-foreground !shadow-sm !rounded-lg overflow-hidden flex flex-col w-fit h-fit", className)} 
-    {...props} 
+export type ControlsProps = ComponentProps<typeof ControlsPrimitive>;
+
+export const Controls = ({ className, ...props }: ControlsProps) => (
+  <ControlsPrimitive
+    className={cn(
+      "gap-px overflow-hidden rounded-md border bg-card p-1 shadow-none!",
+      "[&>button]:rounded-md [&>button]:border-none! [&>button]:bg-transparent! [&>button]:hover:bg-secondary!",
+      className
+    )}
+    {...props}
   />
-));
-Controls.displayName = "Controls";
+);

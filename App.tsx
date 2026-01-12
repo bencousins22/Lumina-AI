@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatPanel } from './components/ChatPanel';
-import { SettingsModalNew as SettingsModal } from './components/SettingsModalNew';
+import { SettingsModal } from './components/SettingsModal';
 import { A2ANodeEditor } from './components/a2a/A2ANodeEditor';
 import { AgentFiles } from './components/agent/AgentFiles';
 import { AgentBackups } from './components/agent/AgentBackups';

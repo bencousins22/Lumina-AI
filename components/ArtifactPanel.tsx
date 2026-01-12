@@ -25,7 +25,12 @@ export const ArtifactPanel: React.FC<ArtifactPanelProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [iframeKey, setIframeKey] = useState(0);
-  const [url, setUrl] = useState('localhost:3000/preview');
+  // Use configurable preview URL or default to localhost
+  const [url, setUrl] = useState(
+    typeof window !== 'undefined' && (window as any).PREVIEW_URL
+      ? (window as any).PREVIEW_URL
+      : 'localhost:3000/preview'
+  );
 
   // Auto-switch to preview when content changes significantly or stops streaming
   useEffect(() => {

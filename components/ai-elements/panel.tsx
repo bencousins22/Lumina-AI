@@ -1,14 +1,15 @@
+import { cn } from "@/lib/utils";
+import { Panel as PanelPrimitive } from "@xyflow/react";
+import type { ComponentProps } from "react";
 
-import React from 'react';
-import { Panel as ReactFlowPanel, PanelProps } from '@xyflow/react';
-import { cn } from '../../lib/utils';
+type PanelProps = ComponentProps<typeof PanelPrimitive>;
 
-export const Panel = React.forwardRef<HTMLDivElement, PanelProps & React.HTMLAttributes<HTMLDivElement>>(({ className, children, ...props }, ref) => (
-  <ReactFlowPanel 
-    className={cn("bg-card/80 backdrop-blur border border-border p-2 rounded-lg shadow-sm flex gap-2", className)} 
+export const Panel = ({ className, ...props }: PanelProps) => (
+  <PanelPrimitive
+    className={cn(
+      "m-4 overflow-hidden rounded-md border bg-card p-1",
+      className
+    )}
     {...props}
-  >
-    {children}
-  </ReactFlowPanel>
-));
-Panel.displayName = "Panel";
+  />
+);

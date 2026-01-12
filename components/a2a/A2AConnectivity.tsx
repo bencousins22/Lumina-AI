@@ -27,9 +27,8 @@ import {
 import { Button } from '../ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import {
-  Clock, Server, Play, Save, Trash2, Plus, X, Settings2,
-  Zap, Box, Terminal, Sparkles, Check, Layers, Loader2,
-  Activity, Cpu, HardDrive, Network
+  Clock, Server, Play, X,
+  Zap, Box, Terminal, Sparkles, Check, Layers, Loader2, Network
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { agentService } from '../../services/agentService';
@@ -41,12 +40,6 @@ interface AgentNode {
   type: 'scheduler' | 'agent' | 'mcp' | 'orchestrator';
   status: 'idle' | 'running' | 'completed' | 'error';
   data: any;
-}
-
-interface DockerStats {
-  cpu: number;
-  memory: { used: number; total: number };
-  network: { rx: number; tx: number };
 }
 
 // Utility functions
@@ -164,7 +157,6 @@ const A2AConnectivityInner = () => {
   const [subagents, setSubagents] = useState<any[]>([]);
   const [mcpServers, setMCPServers] = useState<any[]>([]);
   const [schedulerTasks, setSchedulerTasks] = useState<any[]>([]);
-  const [dockerStats, setDockerStats] = useState<DockerStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { fitView } = useReactFlow();
 
@@ -276,39 +268,6 @@ const A2AConnectivityInner = () => {
           <Background variant={BackgroundVariant.Dots} gap={16} size={1} className="opacity-30" />
         </ReactFlowProvider>
       </Canvas>
-
-      {/* Docker Stats Panel */}
-      <Panel position="top-left" className="m-4 bg-card/95 backdrop-blur border border-border rounded-lg p-4 shadow-lg">
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Activity size={14} className="text-primary" />
-            Docker Runtime
-          </h3>
-          <div className="grid grid-cols-3 gap-3 text-xs">
-            <div className="space-y-1">
-              <div className="text-muted-foreground flex items-center gap-1">
-                <Cpu size={10} />
-                <span>CPU</span>
-              </div>
-              <div className="font-mono text-foreground">3.9%</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground flex items-center gap-1">
-                <HardDrive size={10} />
-                <span>Memory</span>
-              </div>
-              <div className="font-mono text-foreground">1.1GB</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground flex items-center gap-1">
-                <Network size={10} />
-                <span>Network</span>
-              </div>
-              <div className="font-mono text-foreground">30MB</div>
-            </div>
-          </div>
-        </div>
-      </Panel>
 
       {/* Summary Stats */}
       <Panel position="top-right" className="m-4 bg-card/95 backdrop-blur border border-border rounded-lg p-4 shadow-lg">

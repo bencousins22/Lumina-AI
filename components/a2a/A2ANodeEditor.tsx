@@ -33,12 +33,14 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
-import { 
-  Clock, MessageSquare, Server, Play, Save, Trash2, 
+import {
+  Clock, MessageSquare, Server, Play, Save, Trash2,
   Plus, X, Calendar, Settings2, Zap, MoreHorizontal,
   Box, Terminal, Sparkles, Check, Layers, Loader2
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { agentService } from '../../services/agentService';
+import { useToast } from '../../hooks/use-toast';
 
 // --- Visual Helpers ---
 
@@ -349,7 +351,8 @@ const NodeEditorContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { getNodes, getEdges } = useReactFlow();
-  
+  const { toast } = useToast();
+
   // UI State
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -386,50 +389,85 @@ const NodeEditorContent: React.FC = () => {
     animated: Edge.Animated 
   }), []);
 
-  // Initialize Default Graph
+  // Load Workflow from LocalStorage or Backend
   useEffect(() => {
-    const initialNodes = [
-        {
-            id: 'trigger-1',
-            type: 'trigger',
-            position: { x: 50, y: 150 },
-            data: { cron: '0 8 * * *', nextRun: 'Tomorrow 08:00', status: 'idle' }
-        },
-        {
-            id: 'agent-zero',
-            type: 'agent',
-            position: { x: 450, y: 150 },
-            data: { label: 'Agent Zero', isZero: true, role: 'Orchestrator', status: 'idle', toolsCount: 12 }
-        },
-        {
-            id: 'prompt-1',
-            type: 'prompt',
-            position: { x: 850, y: 150 },
-            data: { prompt: 'Analyze system logs for anomalies and generate a summary report.', status: 'idle' }
+    const loadWorkflow = async () => {
+      try {
+        // Try to load saved workflow first
+        const saved = await agentService.getWorkflow('default');
+        if (saved && saved.nodes && saved.edges) {
+          setNodes(saved.nodes);
+          setEdges(saved.edges);
+          return;
         }
-    ];
 
-    setNodes(initialNodes);
-    setEdges([
-        { 
-            id: 'e1-2', 
-            source: 'trigger-1', 
-            target: 'agent-zero', 
-            type: 'animated', 
-            animated: false,
-            style: { stroke: 'var(--border)' },
-            markerEnd: { type: MarkerType.ArrowClosed }
-        },
-        { 
-            id: 'e2-3', 
-            source: 'agent-zero', 
-            target: 'prompt-1', 
-            type: 'animated', 
-            animated: false,
-            style: { stroke: 'var(--border)' },
-            markerEnd: { type: MarkerType.ArrowClosed }
+        // Otherwise, generate from backend data
+        const [tasks, subagents] = await Promise.all([
+          agentService.getTasks(),
+          agentService.listSubagents()
+        ]);
+
+        const newNodes: any[] = [];
+        const newEdges: any[] = [];
+
+        // Convert scheduler tasks to trigger nodes
+        tasks.forEach((task: any, idx: number) => {
+          newNodes.push({
+            id: `trigger-${task.id}`,
+            type: 'trigger',
+            position: { x: 50, y: 150 + idx * 200 },
+            data: {
+              cron: task.cron,
+              nextRun: task.next_run || 'Not scheduled',
+              status: task.state?.toLowerCase() || 'idle'
+            }
+          });
+        });
+
+        // Convert subagents to agent nodes
+        subagents.forEach((agent: any, idx: number) => {
+          newNodes.push({
+            id: `agent-${agent.name}`,
+            type: 'agent',
+            position: { x: 450, y: 150 + idx * 200 },
+            data: {
+              label: agent.name,
+              role: agent.description || 'AI Agent',
+              status: 'idle',
+              toolsCount: agent.tools?.length || 0
+            }
+          });
+
+          // Connect first task to each agent (simple default connection)
+          if (tasks.length > 0 && idx === 0) {
+            newEdges.push({
+              id: `e-${tasks[0].id}-${agent.name}`,
+              source: `trigger-${tasks[0].id}`,
+              target: `agent-${agent.name}`,
+              type: 'animated',
+              animated: false,
+              style: { stroke: 'var(--border)' },
+              markerEnd: { type: MarkerType.ArrowClosed }
+            });
+          }
+        });
+
+        // If no backend data, show empty canvas
+        if (newNodes.length === 0) {
+          console.log('No workflow data available - empty canvas');
         }
-    ]);
+
+        setNodes(newNodes);
+        setEdges(newEdges);
+      } catch (error) {
+        console.error('Failed to load workflow:', error);
+        // Fall back to empty canvas on error
+        setNodes([]);
+        setEdges([]);
+      }
+    };
+
+    loadWorkflow();
   }, [setNodes, setEdges]);
 
   const onConnect = useCallback(
@@ -484,6 +522,53 @@ const NodeEditorContent: React.FC = () => {
       if (!selectedNodeId) return;
       setNodes((nds) => nds.filter((n) => n.id !== selectedNodeId));
       setSelectedNodeId(null);
+  };
+
+  // --- Workflow Save/Load ---
+  const handleSaveWorkflow = async () => {
+    try {
+      const currentNodes = getNodes();
+      const currentEdges = getEdges();
+      await agentService.saveWorkflow('default', currentNodes, currentEdges);
+      toast({
+        title: 'Workflow saved',
+        description: 'Your workflow has been saved successfully.'
+      });
+    } catch (error) {
+      console.error('Failed to save workflow:', error);
+      toast({
+        title: 'Save failed',
+        description: 'Could not save workflow. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleLoadWorkflow = async () => {
+    try {
+      const saved = await agentService.getWorkflow('default');
+      if (saved && saved.nodes && saved.edges) {
+        setNodes(saved.nodes);
+        setEdges(saved.edges);
+        toast({
+          title: 'Workflow loaded',
+          description: 'Your saved workflow has been restored.'
+        });
+      } else {
+        toast({
+          title: 'No saved workflow',
+          description: 'No saved workflow found.',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load workflow:', error);
+      toast({
+        title: 'Load failed',
+        description: 'Could not load workflow. Please try again.',
+        variant: 'destructive'
+      });
+    }
   };
 
   // --- Workflow Simulation ---
@@ -586,7 +671,7 @@ const NodeEditorContent: React.FC = () => {
                     {isRunning ? <Loader2 size={14} className="animate-spin mr-2" /> : <Play size={14} className="text-green-500 fill-green-500 mr-2" />}
                     {isMobile ? "" : (isRunning ? "Running..." : "Run Flow")}
                 </Button>
-                <Button size="sm" variant="default" onClick={() => console.log('Save')}>
+                <Button size="sm" variant="default" onClick={handleSaveWorkflow}>
                     <Save size={14} className="mr-2" />
                     {isMobile ? "" : "Save"}
                 </Button>

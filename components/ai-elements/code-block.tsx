@@ -1,44 +1,178 @@
+"use client";
 
-import React from 'react';
-import { cn } from '../../lib/utils';
-import { Check, Copy, Terminal } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import {
+  type ComponentProps,
+  createContext,
+  type HTMLAttributes,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { type BundledLanguage, codeToHtml, type ShikiTransformer } from "shiki";
 
-interface CodeBlockProps {
+type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
   code: string;
-  language?: string;
-  filename?: string;
-  className?: string;
+  language: BundledLanguage;
+  showLineNumbers?: boolean;
+};
+
+type CodeBlockContextType = {
+  code: string;
+};
+
+const CodeBlockContext = createContext<CodeBlockContextType>({
+  code: "",
+});
+
+const lineNumberTransformer: ShikiTransformer = {
+  name: "line-numbers",
+  line(node, line) {
+    node.children.unshift({
+      type: "element",
+      tagName: "span",
+      properties: {
+        className: [
+          "inline-block",
+          "min-w-10",
+          "mr-4",
+          "text-right",
+          "select-none",
+          "text-muted-foreground",
+        ],
+      },
+      children: [{ type: "text", value: String(line) }],
+    });
+  },
+};
+
+export async function highlightCode(
+  code: string,
+  language: BundledLanguage,
+  showLineNumbers = false
+) {
+  const transformers: ShikiTransformer[] = showLineNumbers
+    ? [lineNumberTransformer]
+    : [];
+
+  return await Promise.all([
+    codeToHtml(code, {
+      lang: language,
+      theme: "one-light",
+      transformers,
+    }),
+    codeToHtml(code, {
+      lang: language,
+      theme: "one-dark-pro",
+      transformers,
+    }),
+  ]);
 }
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'text', filename, className }) => {
-  const [copied, setCopied] = React.useState(false);
+export const CodeBlock = ({
+  code,
+  language,
+  showLineNumbers = false,
+  className,
+  children,
+  ...props
+}: CodeBlockProps) => {
+  const [html, setHtml] = useState<string>("");
+  const [darkHtml, setDarkHtml] = useState<string>("");
+  const mounted = useRef(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  useEffect(() => {
+    highlightCode(code, language, showLineNumbers).then(([light, dark]) => {
+      if (!mounted.current) {
+        setHtml(light);
+        setDarkHtml(dark);
+        mounted.current = true;
+      }
+    });
+
+    return () => {
+      mounted.current = false;
+    };
+  }, [code, language, showLineNumbers]);
 
   return (
-    <div className={cn("rounded-lg border border-border bg-[#0d0d0d] overflow-hidden my-4", className)}>
-      <div className="flex items-center justify-between px-3 py-2 bg-muted/10 border-b border-white/5">
-        <div className="flex items-center gap-2">
-            <Terminal size={12} className="text-muted-foreground" />
-            <span className="text-xs font-mono text-muted-foreground">{filename || language}</span>
+    <CodeBlockContext.Provider value={{ code }}>
+      <div
+        className={cn(
+          "group relative w-full overflow-hidden rounded-md border bg-background text-foreground",
+          className
+        )}
+        {...props}
+      >
+        <div className="relative">
+          <div
+            className="overflow-auto dark:hidden [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+          <div
+            className="hidden overflow-auto dark:block [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+            dangerouslySetInnerHTML={{ __html: darkHtml }}
+          />
+          {children && (
+            <div className="absolute top-2 right-2 flex items-center gap-2">
+              {children}
+            </div>
+          )}
         </div>
-        <button 
-            onClick={handleCopy}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-        >
-            {copied ? <Check size={12} className="text-green-500"/> : <Copy size={12}/>}
-            {copied ? 'Copied' : 'Copy'}
-        </button>
       </div>
-      <div className="p-4 overflow-x-auto custom-scrollbar">
-        <pre className="text-sm font-mono text-gray-300 leading-relaxed">
-            <code>{code}</code>
-        </pre>
-      </div>
-    </div>
+    </CodeBlockContext.Provider>
+  );
+};
+
+export type CodeBlockCopyButtonProps = ComponentProps<typeof Button> & {
+  onCopy?: () => void;
+  onError?: (error: Error) => void;
+  timeout?: number;
+};
+
+export const CodeBlockCopyButton = ({
+  onCopy,
+  onError,
+  timeout = 2000,
+  children,
+  className,
+  ...props
+}: CodeBlockCopyButtonProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+  const { code } = useContext(CodeBlockContext);
+
+  const copyToClipboard = async () => {
+    if (typeof window === "undefined" || !navigator?.clipboard?.writeText) {
+      onError?.(new Error("Clipboard API not available"));
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(code);
+      setIsCopied(true);
+      onCopy?.();
+      setTimeout(() => setIsCopied(false), timeout);
+    } catch (error) {
+      onError?.(error as Error);
+    }
+  };
+
+  const Icon = isCopied ? CheckIcon : CopyIcon;
+
+  return (
+    <Button
+      className={cn("shrink-0", className)}
+      onClick={copyToClipboard}
+      size="icon"
+      variant="ghost"
+      {...props}
+    >
+      {children ?? <Icon size={14} />}
+    </Button>
   );
 };
